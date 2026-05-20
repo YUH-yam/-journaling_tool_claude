@@ -231,48 +231,88 @@ function recomputeStreak() {
 }
 
 // ---------- Render: Today ----------
+// 状況に応じた「今やること」を一文で返す。脳を働かせず読むだけで分かるように。
+function buildTodayCopy() {
+  const today = todayKey();
+  const hasToday = state.sessions.some(s => s.date === today && s.method !== 'skip');
+  const skippedToday = state.sessions.some(s => s.date === today && s.method === 'skip');
+  const total = state.streak.totalDays;
+  const current = state.streak.current;
+  const longest = state.streak.longest;
+  const gap = state.streak.lastDate ? daysBetween(state.streak.lastDate, today) : -1;
+
+  // 推奨手法を曜日でローテーション(入門カテゴリのみ)
+  const beginners = METHODS.filter(m => m.cat === 'beginner');
+  const sug = beginners[new Date().getDay() % beginners.length];
+  const sugSub = `おすすめ: ${sug.name} · ${Math.round(sug.defaultDuration/60)}分`;
+
+  // 既に今日書いた
+  if (hasToday) {
+    return {
+      headline: '今日は、もう書けましたね。',
+      ctaLabel: 'もう一度、書く',
+      ctaSub: sugSub,
+      streak: current > 1 ? `🌿 ${current}日続いています` : `🌱 今日も書けました`
+    };
+  }
+  // 今日「休む」だけ記録した
+  if (skippedToday) {
+    return {
+      headline: '今日はゆっくり休みましょう。',
+      ctaLabel: 'やっぱり書いてみる',
+      ctaSub: sugSub,
+      streak: '🍵 おやすみの記録'
+    };
+  }
+  // まったくの新規(初回)
+  if (total === 0) {
+    return {
+      headline: '今夜、最初の1行を書いてみませんか。',
+      ctaLabel: 'はじめる',
+      ctaSub: sugSub,
+      streak: '🌱 はじめての夜'
+    };
+  }
+  // 2日以上空いた = 復帰
+  if (current === 0 && gap >= 2) {
+    return {
+      headline: 'おかえりなさい。\n今夜、3行だけ書きませんか。',
+      ctaLabel: '1行から再開する',
+      ctaSub: sugSub,
+      streak: `🍂 これまで ${total}日`
+    };
+  }
+  // 昨日まで書いていた = 連続中
+  if (current >= 1) {
+    return {
+      headline: `今日も、3分だけ書きましょうか。`,
+      ctaLabel: 'はじめる',
+      ctaSub: sugSub,
+      streak: current >= 7 ? `🌳 ${current}日続いています` : `🌿 ${current}日続いています`
+    };
+  }
+  // フォールバック
+  return {
+    headline: '今日は、3分だけ書いてみませんか。',
+    ctaLabel: 'はじめる',
+    ctaSub: sugSub,
+    streak: total > 0 ? `🍂 これまで ${total}日` : '🌱 はじめての夜'
+  };
+}
+
 function renderToday() {
   const nick = state.settings.nickname;
   document.getElementById('greet-text').textContent = timeGreet() + (nick ? `、${nick}さん` : '');
   document.getElementById('today-date').textContent = formatDateLong(new Date());
 
-  document.getElementById('streak-num').textContent = state.streak.current;
-  document.getElementById('streak-total').textContent =
-    `これまで ${state.streak.totalDays}日 ・ 最長 ${state.streak.longest}日`;
-
-  const today = todayKey();
-  const todayItems = state.sessions.filter(e => e.date === today);
-  const hasToday = todayItems.length > 0;
-  const msg = document.getElementById('streak-msg');
-  if (hasToday) msg.textContent = '今日も書けましたね。すばらしい。';
-  else if (state.streak.totalDays === 0) msg.textContent = '今日が、はじめの一日。';
-  else if (state.streak.current === 0) msg.innerHTML = 'おかえりなさい。<br>今日、1行から再開しませんか?';
-  else msg.textContent = `${state.streak.current}日続いています。続けていきましょう。`;
-
-  document.getElementById('cta-label').textContent = hasToday ? 'もう一度、紙に向かう' : '今すぐ書く';
+  const copy = buildTodayCopy();
+  // 改行を尊重(headlineに\nを含めることがある)
+  const hl = document.getElementById('today-headline');
+  hl.innerHTML = escapeHtml(copy.headline).replace(/\n/g, '<br>');
+  document.getElementById('cta-label').textContent = copy.ctaLabel;
+  document.getElementById('cta-sub').textContent = copy.ctaSub;
+  document.getElementById('today-streak').textContent = copy.streak;
   document.getElementById('today-prompt').textContent = todayPrompt();
-
-  const enc = document.getElementById('encourage');
-  const gap = state.streak.lastDate ? daysBetween(state.streak.lastDate, today) : -1;
-  if (state.streak.totalDays > 0 && gap >= 2 && !hasToday) {
-    enc.style.display = 'block'; enc.innerHTML = ENCOURAGE_BACK;
-  } else enc.style.display = 'none';
-
-  // Recent: last 7 days
-  const recent = document.getElementById('recent-list');
-  recent.innerHTML = '';
-  const dates = [];
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(); d.setDate(d.getDate() - i);
-    const k = todayKey(d);
-    const items = state.sessions.filter(e => e.date === k);
-    if (items.length) dates.push({date:k, items});
-  }
-  if (!dates.length) {
-    recent.outerHTML = '<div class="empty" id="recent-list"><div class="icon">📓</div>まだ記録がありません。<br>紙とペンを手にとってみましょう。</div>';
-  } else {
-    dates.forEach(({items}) => items.forEach(it => recent.appendChild(renderEntry(it))));
-  }
 }
 
 function renderEntry(s) {
@@ -440,7 +480,6 @@ function finishSession() {
   const m = methodById(session.method);
   document.getElementById('log-sub').textContent = `${m.name} · ${fmtMin(elapsed) || '短時間'}`;
   document.querySelectorAll('#mood-row .mood-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('log-note').value = '';
   closeSheet('sheet-session');
   setTimeout(() => openSheet('sheet-log'), 260);
 }
@@ -925,13 +964,16 @@ function wire() {
   document.getElementById('session-cancel').addEventListener('click', cancelSession);
 
   // Log
+  // 気分タップ = その場で保存。入力欄やボタンを介さない最短動作。
   document.querySelectorAll('#mood-row .mood-btn').forEach(b => b.addEventListener('click', () => {
     document.querySelectorAll('#mood-row .mood-btn').forEach(x => x.classList.remove('active'));
     b.classList.add('active');
-    if (pendingLog) pendingLog.mood = Number(b.dataset.mood);
+    if (pendingLog) {
+      pendingLog.mood = Number(b.dataset.mood);
+      // 視覚フィードバックを少しだけ見せてから閉じる
+      setTimeout(saveLog, 220);
+    }
   }));
-  document.getElementById('log-note').addEventListener('input', e => { if (pendingLog) pendingLog.note = e.target.value; });
-  document.getElementById('log-save').addEventListener('click', saveLog);
   document.getElementById('log-skip-meta').addEventListener('click', skipLogMeta);
 
   // Insights
@@ -1052,7 +1094,7 @@ window.__kokoro = {
   todayKey, daysBetween, todayPrompt, shufflePrompt,
   startSession, finishSession, cancelSession, startTimer, stopTimer, toggleTimer,
   saveLog, skipLogMeta, handleSkipDay,
-  buildSyncPayload, exportJSON,
+  buildSyncPayload, exportJSON, buildTodayCopy, renderToday,
   goScreen, openDetailSheet, openMethodDetailSheet,
   openSheet, closeSheet, closeAllSheets,
   METHODS, PROMPTS, APPS_SCRIPT_CODE, methodById,

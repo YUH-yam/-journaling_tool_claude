@@ -348,7 +348,132 @@ a { color: var(--accent); text-decoration: none; }
 .tab svg { width: 26px; height: 26px; }
 .tab:active { opacity: 0.6; }
 
-/* ---------- Hero (Today) ---------- */
+/* ---------- Today screen (v3.1 — calm, one-sentence focus) ----------
+   設計原則: 1画面=1動作。脳を働かせず、文を読むだけで何をすべきか分かる。
+*/
+.today-greet {
+  padding: var(--s-6) var(--s-5) 0;
+}
+.greet-line {
+  font-size: var(--t-callout);
+  color: var(--label-secondary);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+.greet-date {
+  font-size: var(--t-caption-1);
+  color: var(--label-tertiary);
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+}
+
+/* 大きな見出し: 状況に応じて変わる「今やること」の一文 */
+.today-headline {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.55;
+  letter-spacing: -0.008em;
+  margin: var(--s-4) var(--s-5) var(--s-3);
+  color: var(--label);
+}
+@media (min-width: 380px) {
+  .today-headline { font-size: 28px; }
+}
+
+/* 連続日数チップ: 圧ではなく、そっとした励まし */
+.today-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 var(--s-5) var(--s-5);
+  padding: 6px 12px;
+  background: var(--accent-tint);
+  color: var(--accent);
+  border-radius: 999px;
+  font-size: var(--t-footnote);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  font-feature-settings: "tnum" 1;
+}
+
+/* 唯一の大きなボタン */
+.today-primary {
+  margin: 0 var(--s-4) var(--s-5);
+}
+.btn-large-cta {
+  min-height: 60px;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: var(--r-4);
+  position: relative;
+}
+.btn-large-cta .cta-arrow {
+  font-size: 22px;
+  font-weight: 400;
+  margin-left: 6px;
+  transition: transform var(--d-fast) var(--ease);
+}
+.btn-large-cta:active .cta-arrow { transform: translateX(2px); }
+.cta-hint {
+  text-align: center;
+  font-size: var(--t-caption-1);
+  color: var(--label-tertiary);
+  margin-top: var(--s-2);
+  letter-spacing: 0.02em;
+}
+
+/* 今日の問い: 引用風(CTAではない、雰囲気として置く) */
+.today-quote {
+  margin: var(--s-6) var(--s-5) var(--s-4);
+  padding: 2px var(--s-4) 2px var(--s-4);
+  border-left: 2px solid var(--accent-tint);
+  position: relative;
+}
+.quote-label {
+  font-size: var(--t-caption-2);
+  color: var(--label-tertiary);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: var(--s-2);
+}
+.quote-text {
+  font-family: var(--font-serif);
+  font-size: var(--t-callout);
+  line-height: 1.75;
+  color: var(--label-secondary);
+  margin: 0;
+  padding-right: 32px;
+  letter-spacing: -0.003em;
+}
+.quote-shuffle {
+  position: absolute;
+  top: 0; right: 0;
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--label-tertiary);
+}
+.quote-shuffle:active { background: var(--fill-1); color: var(--label-secondary); }
+
+/* 脚注リンク: 主動線の邪魔をしない小さなオプション */
+.today-foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-3);
+  padding: var(--s-4) var(--s-5) var(--s-6);
+}
+.foot-link {
+  font-size: var(--t-footnote);
+  color: var(--label-tertiary);
+  padding: var(--s-2) 4px;
+  font-weight: 400;
+}
+.foot-link:active { color: var(--label-secondary); }
+.foot-dot { color: var(--label-quaternary); font-size: var(--t-footnote); }
+
+/* ---------- Hero (legacy v3.0, kept for backward-compat — unused on Today) ---------- */
 .hero {
   margin: 0 var(--s-4) var(--s-4);
   padding: var(--s-5);
@@ -745,9 +870,21 @@ a { color: var(--accent); text-decoration: none; }
 .timer-fg-ring.running { animation: breathe 6s ease-in-out infinite; transform-origin: center; }
 
 /* ---------- Log sheet ---------- */
-.log-head { padding: var(--s-3) var(--s-4) var(--s-4); text-align: center; }
+.log-head { padding: var(--s-5) var(--s-4) var(--s-4); text-align: center; }
 .log-head h2 { font-size: var(--t-title-2); margin: 0; font-weight: 700; letter-spacing: -0.01em; }
 .log-head p { font-size: var(--t-subhead); color: var(--label-secondary); margin: var(--s-1) 0 0; }
+.log-head .log-hint {
+  font-size: var(--t-footnote);
+  color: var(--label-tertiary);
+  margin-top: var(--s-3);
+  line-height: 1.7;
+}
+.log-foot {
+  display: flex; justify-content: center;
+  padding: var(--s-4) var(--s-4) var(--s-3);
+}
+.log-foot .foot-link { font-size: var(--t-footnote); color: var(--label-tertiary); padding: var(--s-2) var(--s-3); }
+.log-foot .foot-link:active { color: var(--label-secondary); }
 
 .mood-row {
   display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--s-2);

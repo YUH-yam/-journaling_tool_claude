@@ -101,6 +101,24 @@ assert(html.includes('role="tablist"'), 'tab bar has ARIA role');
 assert(html.includes('role="dialog"'), 'sheets/modal have ARIA role');
 assert(html.includes('aria-modal="true"'), 'modal-style dialogs aria-modal');
 
+// Today screen v3.1 — calm/simplified
+assert(html.includes('id="today-headline"'), 'today-headline (adaptive sentence) present');
+assert(html.includes('id="today-streak"'), 'today-streak chip present');
+assert(html.includes('id="today-prompt"'), 'today-prompt (quote) present');
+assert(html.includes('class="today-quote"'), 'quote-style prompt block (not card)');
+assert(html.includes('class="today-foot"'), 'foot links area present');
+assert(html.includes('class="foot-link"'), 'foot-link styling present');
+assert(html.includes('btn-large-cta'), 'large single CTA button styled');
+assert(html.includes('id="cta-sub"'), 'CTA hint/sub present');
+assert(!html.includes('id="recent-list"'), 'recent-list removed from Today (moved to insights)');
+assert(!html.includes('hero-top') || !/<div class="hero"/.test(html), 'old hero card not used on today');
+
+// Log screen v3.1 — minimal input (tap-to-save)
+assert(!html.includes('id="log-note"'), 'log-note input removed (no text entry after session)');
+assert(!html.includes('id="log-save"'), 'log-save button removed (mood tap = save)');
+assert(html.includes('id="log-skip-meta"'), 'log-skip-meta still available');
+assert(html.includes('class="log-hint"'), 'log explainer ("選ぶと記録")');
+
 // Other critical UI
 assert(html.includes('id="skip-btn"'), 'skip-day button present');
 assert(html.includes('id="prompt-shuffle"'), 'prompt shuffle present');
@@ -325,6 +343,65 @@ const sNeg = k.addSession({ method:'free', duration:-30 });
 assert(sNeg.duration === 0, 'negative duration clamped');
 const sFrac = k.addSession({ method:'free', duration:305.7 });
 assert(sFrac.duration === 306, 'fractional rounded');
+
+// ============================================================
+// 4.5. Today copy (adaptive headline)
+// ============================================================
+section('4.5. 「今日」タブの状況適応コピー');
+
+// 新規ユーザー
+k.reset();
+let copy = k.buildTodayCopy();
+assert(copy.headline.includes('最初の1行') || copy.headline.includes('最初'), 'new user: "最初の1行" headline');
+assert(copy.ctaLabel === 'はじめる', 'new user CTA = はじめる');
+assert(copy.streak.includes('はじめて') || copy.streak.includes('🌱'), 'new user streak chip = はじめて系');
+
+// 今日すでに書いた
+k.reset();
+k.addSession({ method:'three', duration:180 });
+copy = k.buildTodayCopy();
+assert(copy.headline.includes('もう書け') || copy.headline.includes('書けました'), 'wrote-today headline acknowledges');
+assert(copy.ctaLabel.includes('もう一度') || copy.ctaLabel.includes('書く'), 'wrote-today CTA = もう一度');
+
+// 今日「休む」だけ記録
+k.reset();
+k.addSession({ method:'skip', duration:0 });
+copy = k.buildTodayCopy();
+assert(copy.headline.includes('休み') || copy.headline.includes('休') || copy.headline.includes('ゆっくり'), 'skip-today headline acknowledges rest');
+assert(copy.streak.includes('🍵') || copy.streak.includes('おやすみ') || copy.streak.includes('休'), 'skip-today streak chip differs');
+
+// 連続中(昨日まで書いた)
+k.reset();
+const yest2 = (() => { const d = new Date(); d.setDate(d.getDate()-1); return k.todayKey(d); })();
+k.setState({
+  settings: { onboarded:true, nickname:'', reminderTime:'', createdAt:new Date().toISOString(), sheetsUrl:'', sheetsLastSync:'' },
+  sessions: [{ id:'y2', date:yest2, method:'three', duration:180, mood:null, note:'', createdAt:new Date().toISOString() }],
+  streak: { current:1, longest:1, totalDays:1, lastDate:yest2 },
+  promptSeed: 0
+});
+copy = k.buildTodayCopy();
+assert(!copy.headline.includes('はじめて') && !copy.headline.includes('もう書け'), 'continuing-streak headline is for ongoing');
+assert(copy.streak.includes('1日続いて') || copy.streak.includes('続いて'), 'continuing streak chip says 続いている');
+
+// 2日以上空けた = 復帰
+k.reset();
+const fourAgo = (() => { const d = new Date(); d.setDate(d.getDate()-4); return k.todayKey(d); })();
+k.setState({
+  settings: { onboarded:true, nickname:'', reminderTime:'', createdAt:new Date().toISOString(), sheetsUrl:'', sheetsLastSync:'' },
+  sessions: [{ id:'o', date:fourAgo, method:'three', duration:180, mood:null, note:'', createdAt:new Date().toISOString() }],
+  streak: { current:0, longest:1, totalDays:1, lastDate:fourAgo },
+  promptSeed: 0
+});
+copy = k.buildTodayCopy();
+assert(copy.headline.includes('おかえり') || copy.headline.includes('再開') || copy.headline.includes('3行'), 'gap headline welcomes back');
+assert(copy.ctaLabel.includes('再開') || copy.ctaLabel.includes('1行'), 'gap CTA suggests easy restart');
+assert(copy.streak.includes('🍂') || copy.streak.includes('これまで'), 'gap streak chip = これまで系');
+
+// ctaSubに「おすすめ」と分・手法名が含まれる
+k.reset();
+copy = k.buildTodayCopy();
+assert(copy.ctaSub.includes('おすすめ'), 'ctaSub includes "おすすめ"');
+assert(/[0-9]+分/.test(copy.ctaSub), 'ctaSub includes duration in minutes');
 
 // ============================================================
 // 5. Persistence

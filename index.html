@@ -119,50 +119,41 @@
 
   <!-- ====== TODAY ====== -->
   <section class="screen" id="screen-today" data-title="今日">
-    <div class="large-title">
-      <h1 id="lt-today">今日</h1>
-      <div class="subtitle" id="today-date"></div>
+    <!-- 上部の小さな挨拶と日付 -->
+    <div class="today-greet">
+      <div class="greet-line" id="greet-text">こんばんは</div>
+      <div class="greet-date" id="today-date"></div>
     </div>
 
-    <div class="hero">
-      <div class="hero-top">
-        <div>
-          <div class="streak-num" id="streak-num">0</div>
-          <div class="streak-label">日連続</div>
-        </div>
-        <div style="text-align:right;">
-          <div class="streak-label" id="greet-text">こんにちは</div>
-        </div>
-      </div>
-      <div class="hero-msg" id="streak-msg">今日が、はじめの一日。</div>
-      <div class="hero-meta" id="streak-total">これまで 0日 ・ 最長 0日</div>
-    </div>
+    <!-- 状況に応じて変わる、ひとことの見出し(画面の主役) -->
+    <h2 class="today-headline" id="today-headline">今日は、3分だけ書いてみませんか。</h2>
 
-    <div class="actions-stack">
-      <button class="btn btn-filled block" id="cta-write">
-        <svg class="sym" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M14 4l4 4-10 10H4v-4L14 4z"/><path d="M4 20h16"/></svg>
-        <span id="cta-label">今すぐ書く</span>
+    <!-- 連続日数(さりげない励まし) -->
+    <div class="today-streak" id="today-streak" aria-live="polite">🌱 はじめての夜</div>
+
+    <!-- 唯一の大きなボタン -->
+    <div class="today-primary">
+      <button class="btn btn-filled block btn-large-cta" id="cta-write">
+        <span id="cta-label">はじめる</span>
+        <span class="cta-arrow" aria-hidden="true">→</span>
       </button>
-      <button class="btn btn-tinted block" id="cta-pick">別の手法を選ぶ</button>
+      <div class="cta-hint" id="cta-sub">おすすめ: 3行ジャーナル · 3分</div>
     </div>
 
-    <div class="spacer"></div>
-
-    <div class="prompt">
-      <div class="prompt-label">今日の問い</div>
-      <div class="prompt-text" id="today-prompt">準備中…</div>
-      <button class="prompt-refresh" id="prompt-shuffle" aria-label="別の問い">
-        <svg class="sym" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M3 12a9 9 0 0 1 16.5-5"/><path d="M21 4v5h-5"/><path d="M21 12a9 9 0 0 1-16.5 5"/><path d="M3 20v-5h5"/></svg>
+    <!-- 今日の問い(引用風・控えめ) -->
+    <div class="today-quote">
+      <div class="quote-label">今日の問い</div>
+      <p class="quote-text" id="today-prompt">…</p>
+      <button class="quote-shuffle" id="prompt-shuffle" aria-label="別の問いを見る">
+        <svg class="sym" viewBox="0 0 24 24" style="width:14px;height:14px;stroke-width:1.8;"><path d="M3 12a9 9 0 0 1 16.5-5"/><path d="M21 4v5h-5"/><path d="M21 12a9 9 0 0 1-16.5 5"/><path d="M3 20v-5h5"/></svg>
       </button>
     </div>
 
-    <div id="encourage" class="card flat" style="display:none;background:var(--accent-tint);border:none;font-size:var(--t-subhead);line-height:1.7;color:var(--label);"></div>
-
-    <div class="sec-head">この1週間</div>
-    <div class="list" id="recent-list"></div>
-
-    <div style="padding: var(--s-3) var(--s-4) var(--s-4); text-align:center;">
-      <button class="btn-plain" id="skip-btn" style="color:var(--label-tertiary); font-size:var(--t-footnote); padding: var(--s-2) var(--s-3);">今日は書けない、と記録する</button>
+    <!-- 脚注リンク -->
+    <div class="today-foot">
+      <button class="foot-link" id="cta-pick">ほかの書き方を見る</button>
+      <span class="foot-dot" aria-hidden="true">·</span>
+      <button class="foot-link" id="skip-btn">今日は休む</button>
     </div>
   </section>
 
@@ -401,20 +392,15 @@
   </div>
 </div>
 
-<!-- Log (after session) sheet -->
-<div class="sheet" id="sheet-log" role="dialog" aria-modal="true" aria-label="記録する">
+<!-- Log (after session) sheet — シンプル化: タップ1つで保存 -->
+<div class="sheet" id="sheet-log" role="dialog" aria-modal="true" aria-label="記録">
   <div class="sheet-handle"></div>
-  <div class="sheet-nav">
-    <div class="leading"></div>
-    <div class="title">記録する</div>
-    <div class="trailing"></div>
-  </div>
   <div class="sheet-body">
     <div class="log-head">
       <h2>おつかれさま。</h2>
       <p id="log-sub">手法 · 時間</p>
+      <p class="log-hint">気分をひとつ選ぶと、そのまま記録されます。</p>
     </div>
-    <div class="field-label" style="margin: var(--s-4) var(--s-4) var(--s-2); padding-left: 0;">今の気分(任意)</div>
     <div class="mood-row" id="mood-row">
       <button class="mood-btn" data-mood="1" aria-label="つらい"><span class="emoji">😢</span><span>つらい</span></button>
       <button class="mood-btn" data-mood="2" aria-label="もやもや"><span class="emoji">😕</span><span>もやもや</span></button>
@@ -422,16 +408,10 @@
       <button class="mood-btn" data-mood="4" aria-label="すこし軽い"><span class="emoji">🙂</span><span>すこし軽い</span></button>
       <button class="mood-btn" data-mood="5" aria-label="穏やか"><span class="emoji">😊</span><span>穏やか</span></button>
     </div>
-    <div class="field">
-      <div class="field-label" style="padding-left:0;">見出しメモ(任意・短く)</div>
-      <input class="field-input" type="text" id="log-note" maxlength="40" placeholder="例: 仕事の不安、母との会話、感謝" autocomplete="off" />
-      <div class="field-hint">本文はここに書かないでください。アプリには見出しだけ残します。</div>
+    <div class="log-foot">
+      <button class="foot-link" id="log-skip-meta">気分を選ばずに閉じる</button>
     </div>
-    <div class="actions-stack" style="margin-top: var(--s-3);">
-      <button class="btn btn-filled block" id="log-save">記録する</button>
-      <button class="btn-plain block" id="log-skip-meta" style="text-align:center;">何も記録せず終わる</button>
-    </div>
-    <div class="spacer-lg"></div>
+    <div class="spacer"></div>
   </div>
 </div>
 
