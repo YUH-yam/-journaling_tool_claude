@@ -7,7 +7,7 @@ import url from 'node:url';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const here = __dirname;
-const htmlPath = path.join(here, 'kokoro-note.html');
+const htmlPath = path.join(here, 'index.html');
 const cssPath = path.join(here, 'styles.css');
 const jsPath = path.join(here, 'app.js');
 
@@ -21,7 +21,7 @@ const section = n => console.log(`\n[${n}]`);
 // ============================================================
 section('0. ファイル構成 (split HTML/CSS/JS)');
 
-assert(fs.existsSync(htmlPath), 'kokoro-note.html exists');
+assert(fs.existsSync(htmlPath), 'index.html exists');
 assert(fs.existsSync(cssPath), 'styles.css exists (separated)');
 assert(fs.existsSync(jsPath), 'app.js exists (separated)');
 
@@ -190,7 +190,7 @@ const documentStub = {
   body: { appendChild(){}, addEventListener(){}, style:{} }
 };
 
-const locationStub = { protocol: 'file:', hostname: '', hash: '', href: 'file:///kokoro-note.html' };
+const locationStub = { protocol: 'file:', hostname: '', hash: '', href: 'file:///index.html' };
 const navigatorStub = { vibrate: () => {}, clipboard: { writeText: async () => {} }, serviceWorker: undefined };
 
 const windowStub = {

@@ -5,7 +5,7 @@
 const CACHE_NAME = 'kokoro-note-v3.0.0';
 const ASSETS = [
   './',
-  './kokoro-note.html',
+  './index.html',
   './styles.css',
   './app.js',
   './manifest.json',
@@ -65,7 +65,7 @@ self.addEventListener('fetch', (event) => {
         }).catch(() => {
           // Last-ditch: serve the main app shell
           if (req.mode === 'navigate') {
-            return caches.match('./kokoro-note.html');
+            return caches.match('./index.html');
           }
         });
       })
