@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="96" fill="#f4ede1"/>
+  <rect x="144" y="100" width="224" height="316" rx="14" fill="#fffdf5" stroke="#d8b88a" stroke-width="8"/>
+  <line x1="184" y1="170" x2="332" y2="170" stroke="#c8d3bd" stroke-width="8" stroke-linecap="round"/>
+  <line x1="184" y1="218" x2="332" y2="218" stroke="#c8d3bd" stroke-width="8" stroke-linecap="round"/>
+  <line x1="184" y1="266" x2="316" y2="266" stroke="#c8d3bd" stroke-width="8" stroke-linecap="round"/>
+  <line x1="184" y1="314" x2="324" y2="314" stroke="#c8d3bd" stroke-width="8" stroke-linecap="round"/>
+  <line x1="184" y1="362" x2="288" y2="362" stroke="#c8d3bd" stroke-width="8" stroke-linecap="round"/>
+  <line x1="168" y1="120" x2="168" y2="396" stroke="#e7b8b3" stroke-width="4" opacity="0.7"/>
+  <path d="M332 356 L 422 268 L 442 288 L 352 376 Z" fill="#7a8a6f"/>
+  <path d="M422 268 L 442 288 L 456 254 Z" fill="#5d6b54"/>
+  <circle cx="345" cy="367" r="6" fill="#fffdf5"/>
+</svg>

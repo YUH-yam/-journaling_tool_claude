@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<meta name="theme-color" content="#f5f0e6" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0e0d09" media="(prefers-color-scheme: dark)" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="こころノート" />
+<meta name="format-detection" content="telephone=no" />
+<title>こころノート — 紙のジャーナリングの伴走者</title>
+<link rel="manifest" href="./manifest.json" />
+<link rel="icon" type="image/svg+xml" sizes="192x192" href="./icon-192.svg" />
+<link rel="icon" type="image/svg+xml" sizes="512x512" href="./icon-512.svg" />
+<link rel="apple-touch-icon" href="./apple-touch-icon.svg" />
+<link rel="mask-icon" href="./icon-512.svg" color="#6b8163" />
+
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+<!-- ============================================================
+     Onboarding
+     ============================================================ -->
+<div class="onb" id="onb" role="dialog" aria-modal="true" aria-label="ようこそ">
+
+  <div class="onb-step active" data-step="0">
+    <div class="onb-art">
+      <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="og1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#fdf3df"/><stop offset="1" stop-color="#ede5c9"/>
+          </linearGradient>
+        </defs>
+        <rect width="280" height="220" rx="32" fill="url(#og1)"/>
+        <rect x="78" y="44" width="124" height="148" rx="8" fill="#fffdf5" stroke="#c69247" stroke-width="2"/>
+        <line x1="98" y1="78" x2="184" y2="78" stroke="#c8d3bd" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="98" y1="100" x2="184" y2="100" stroke="#c8d3bd" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="98" y1="122" x2="172" y2="122" stroke="#c8d3bd" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="98" y1="144" x2="180" y2="144" stroke="#c8d3bd" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="98" y1="166" x2="160" y2="166" stroke="#c8d3bd" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M188 156 L 218 126 L 226 134 L 196 164 Z" fill="#6b8163"/>
+        <path d="M218 126 L 226 134 L 232 120 Z" fill="#4d5e44"/>
+      </svg>
+    </div>
+    <div class="onb-title">あなたの言葉は紙に。<br>アプリは伴走者。</div>
+    <div class="onb-body">
+      タイマーを回し、問いを差し出し、<br>続けやすくする道具です。<br>
+      書いた内容そのものは、紙の上だけにあります。
+    </div>
+    <div class="onb-dots"><span class="onb-dot active"></span><span class="onb-dot"></span><span class="onb-dot"></span></div>
+    <div class="onb-actions"><button class="btn btn-filled block" data-onb-next>次へ</button></div>
+  </div>
+
+  <div class="onb-step" data-step="1">
+    <div class="onb-art">
+      <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="280" height="220" rx="32" fill="#faf6ec"/>
+        <circle cx="140" cy="106" r="68" fill="none" stroke="#e9efe2" stroke-width="6"/>
+        <circle cx="140" cy="106" r="68" fill="none" stroke="#6b8163" stroke-width="6"
+          stroke-linecap="round" stroke-dasharray="280 427" transform="rotate(-90 140 106)"/>
+        <text x="140" y="116" font-size="28" text-anchor="middle" fill="#1c1c1a" font-family="-apple-system, sans-serif" font-weight="300">5:00</text>
+      </svg>
+    </div>
+    <div class="onb-title">タイマーと問いだけ。<br>あとは紙へ。</div>
+    <div class="onb-body">
+      <strong>10の手法</strong>から、気分で選んで。<br>
+      3分の3行ジャーナルから、15分のモーニングページまで。
+    </div>
+    <div class="onb-dots"><span class="onb-dot"></span><span class="onb-dot active"></span><span class="onb-dot"></span></div>
+    <div class="onb-actions">
+      <button class="btn btn-tinted" data-onb-prev>戻る</button>
+      <button class="btn btn-filled" data-onb-next>次へ</button>
+    </div>
+  </div>
+
+  <div class="onb-step" data-step="2">
+    <div class="onb-art">
+      <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="280" height="220" rx="32" fill="#ebe5d5"/>
+        <path d="M40 180 L 80 140 L 110 158 L 150 100 L 190 124 L 240 70"
+          stroke="#6b8163" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="80" cy="140" r="6" fill="#6b8163"/>
+        <circle cx="110" cy="158" r="6" fill="#6b8163"/>
+        <circle cx="150" cy="100" r="6" fill="#6b8163"/>
+        <circle cx="190" cy="124" r="6" fill="#6b8163"/>
+        <circle cx="240" cy="70" r="6" fill="#c69247"/>
+      </svg>
+    </div>
+    <div class="onb-title">三日坊主、<br>大歓迎です。</div>
+    <div class="onb-body">
+      書けない日は「書けない」と一押し。<br>
+      <strong>不完全な10回</strong>のほうが、完璧な1回より習慣になります。
+    </div>
+    <div class="field" style="margin: 0 0 var(--s-3);">
+      <label class="field-label" for="onb-name">お名前(任意)</label>
+      <input class="field-input" type="text" id="onb-name" maxlength="20" placeholder="ニックネーム" autocomplete="off" />
+    </div>
+    <div class="onb-dots"><span class="onb-dot"></span><span class="onb-dot"></span><span class="onb-dot active"></span></div>
+    <div class="onb-actions">
+      <button class="btn btn-tinted" data-onb-prev>戻る</button>
+      <button class="btn btn-filled" id="onb-start">はじめる</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     Main app
+     ============================================================ -->
+<div class="app" id="app" style="display:none;">
+
+  <!-- Compact sticky nav (appears on scroll) -->
+  <div class="compact-nav" id="compact-nav" aria-hidden="true">
+    <div class="leading"></div>
+    <div class="title" id="compact-title">今日</div>
+    <div class="trailing"></div>
+  </div>
+
+  <!-- ====== TODAY ====== -->
+  <section class="screen" id="screen-today" data-title="今日">
+    <div class="large-title">
+      <h1 id="lt-today">今日</h1>
+      <div class="subtitle" id="today-date"></div>
+    </div>
+
+    <div class="hero">
+      <div class="hero-top">
+        <div>
+          <div class="streak-num" id="streak-num">0</div>
+          <div class="streak-label">日連続</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="streak-label" id="greet-text">こんにちは</div>
+        </div>
+      </div>
+      <div class="hero-msg" id="streak-msg">今日が、はじめの一日。</div>
+      <div class="hero-meta" id="streak-total">これまで 0日 ・ 最長 0日</div>
+    </div>
+
+    <div class="actions-stack">
+      <button class="btn btn-filled block" id="cta-write">
+        <svg class="sym" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M14 4l4 4-10 10H4v-4L14 4z"/><path d="M4 20h16"/></svg>
+        <span id="cta-label">今すぐ書く</span>
+      </button>
+      <button class="btn btn-tinted block" id="cta-pick">別の手法を選ぶ</button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div class="prompt">
+      <div class="prompt-label">今日の問い</div>
+      <div class="prompt-text" id="today-prompt">準備中…</div>
+      <button class="prompt-refresh" id="prompt-shuffle" aria-label="別の問い">
+        <svg class="sym" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M3 12a9 9 0 0 1 16.5-5"/><path d="M21 4v5h-5"/><path d="M21 12a9 9 0 0 1-16.5 5"/><path d="M3 20v-5h5"/></svg>
+      </button>
+    </div>
+
+    <div id="encourage" class="card flat" style="display:none;background:var(--accent-tint);border:none;font-size:var(--t-subhead);line-height:1.7;color:var(--label);"></div>
+
+    <div class="sec-head">この1週間</div>
+    <div class="list" id="recent-list"></div>
+
+    <div style="padding: var(--s-3) var(--s-4) var(--s-4); text-align:center;">
+      <button class="btn-plain" id="skip-btn" style="color:var(--label-tertiary); font-size:var(--t-footnote); padding: var(--s-2) var(--s-3);">今日は書けない、と記録する</button>
+    </div>
+  </section>
+
+  <!-- ====== METHODS ====== -->
+  <section class="screen" id="screen-methods" data-title="手法" style="display:none;">
+    <div class="large-title">
+      <h1>手法</h1>
+      <div class="subtitle">10の書き方から、気分で選ぶ</div>
+    </div>
+
+    <div class="sec-head">入門</div>
+    <div class="list" id="methods-beginner"></div>
+
+    <div class="sec-head">コア</div>
+    <div class="list" id="methods-core"></div>
+
+    <div class="sec-head">深める</div>
+    <div class="list" id="methods-depth"></div>
+
+    <div class="sec-head">振り返り</div>
+    <div class="list" id="methods-review"></div>
+
+    <div class="spacer-lg"></div>
+  </section>
+
+  <!-- ====== INSIGHTS (review) ====== -->
+  <section class="screen" id="screen-insights" data-title="振り返り" style="display:none;">
+    <div class="large-title">
+      <h1>振り返り</h1>
+      <div class="subtitle" id="insights-sub">これまでの足跡</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-tile"><div class="l">累計</div><div class="v" id="stat-total">0</div><div class="s">日</div></div>
+      <div class="stat-tile"><div class="l">最長連続</div><div class="v" id="stat-longest">0</div><div class="s">日</div></div>
+      <div class="stat-tile"><div class="l">今月</div><div class="v" id="stat-month">0</div><div class="s">日</div></div>
+      <div class="stat-tile"><div class="l">気分の平均</div><div class="v" id="stat-mood">—</div><div class="s" id="stat-mood-sub">記録なし</div></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="cal-head">
+        <div class="cal-title" id="cal-title">2026年5月</div>
+        <div class="cal-nav">
+          <button id="cal-prev" aria-label="前の月"><svg class="sym" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M15 6l-6 6 6 6"/></svg></button>
+          <button id="cal-next" aria-label="次の月"><svg class="sym" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M9 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
+      <div id="cal-body"></div>
+      <div class="cal-legend">
+        <span><span class="swatch" style="background:var(--accent);"></span>書いた</span>
+        <span><span class="swatch" style="background:var(--warm);"></span>休み</span>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <h3>30日間の頻度</h3>
+      <div class="chart-sub">緑=書いた / 砂色=休み</div>
+      <div class="bars" id="bars-30"></div>
+      <div class="bars-x"><span id="bars-x-start">—</span><span>今日</span></div>
+    </div>
+
+    <div class="chart-card" id="donut-card" style="display:none;">
+      <h3>手法の分布</h3>
+      <div class="chart-sub">どの型をよく使っているか</div>
+      <div class="donut-wrap">
+        <svg class="donut-svg" id="donut-svg" viewBox="0 0 42 42" aria-hidden="true"></svg>
+        <div class="donut-legend" id="donut-legend"></div>
+      </div>
+    </div>
+
+    <div class="sec-head">記録</div>
+    <div class="search-wrap">
+      <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="search-input" placeholder="メモを検索…" autocomplete="off" />
+    </div>
+    <div class="chips" id="filter-chips"></div>
+    <div class="list" id="entry-list"></div>
+    <div class="spacer-lg"></div>
+  </section>
+
+  <!-- ====== SETTINGS ====== -->
+  <section class="screen" id="screen-settings" data-title="設定" style="display:none;">
+    <div class="large-title">
+      <h1>設定</h1>
+    </div>
+
+    <div class="sec-head">アカウント</div>
+    <div class="list">
+      <button class="list-row chevron" id="set-name">
+        <div class="row-main">
+          <div class="row-title">ニックネーム</div>
+          <div class="row-sub">呼びかけに使います</div>
+        </div>
+        <div class="row-value" id="set-name-val">—</div>
+      </button>
+      <button class="list-row chevron" id="set-reminder">
+        <div class="row-main">
+          <div class="row-title">リマインダー時刻</div>
+          <div class="row-sub">通知許可が必要です</div>
+        </div>
+        <div class="row-value" id="set-reminder-val">未設定</div>
+      </button>
+    </div>
+
+    <div class="sec-head">Google Sheets 連携 <span class="right">任意</span></div>
+    <div class="list">
+      <button class="list-row chevron" id="set-sheets">
+        <div class="row-main">
+          <div class="row-title" id="sheets-label">設定する</div>
+          <div class="row-sub" id="sheets-sub">あなた自身のGoogleアカウントだけに同期</div>
+        </div>
+      </button>
+      <button class="list-row chevron" id="set-sync" disabled>
+        <div class="row-main">
+          <div class="row-title">いま同期する</div>
+          <div class="row-sub" id="sync-sub">まず連携を設定</div>
+        </div>
+      </button>
+    </div>
+
+    <div class="sec-head">データ</div>
+    <div class="list">
+      <button class="list-row chevron" id="set-export">
+        <div class="row-main">
+          <div class="row-title">JSONとして書き出す</div>
+          <div class="row-sub">バックアップ用に</div>
+        </div>
+      </button>
+      <button class="list-row chevron danger" id="set-delete">
+        <div class="row-main">
+          <div class="row-title">すべてのデータを削除</div>
+          <div class="row-sub">取り消せません</div>
+        </div>
+      </button>
+    </div>
+
+    <div class="sec-head">このアプリについて</div>
+    <div class="card">
+      <p style="font-size: var(--t-footnote); color: var(--label-secondary); line-height: 1.85; margin: 0;">
+        <strong style="color: var(--label);">あなたの言葉は紙の上だけ。</strong>
+        書いた内容そのものは保存されません。記録するのは、日付・選んだ手法・所要時間・気分・任意の見出しメモのみです。<br><br>
+        ジャーナリングは強力なセルフケアですが、深刻な不安・抑うつ・トラウマの専門的治療の代替にはなりません。書いていてつらさが増す場合は手を止めて、信頼できる人や専門家に相談してください。<br><br>
+        厚生労働省 こころの健康相談統一ダイヤル: <strong style="color: var(--label);">0570-064-556</strong>
+      </p>
+    </div>
+    <div class="spacer"></div>
+    <div class="muted center" style="font-size: var(--t-caption-1); padding-bottom: var(--s-5);">v3.0 · Apple HIG aligned</div>
+  </section>
+
+  <!-- ====== TAB BAR ====== -->
+  <nav class="tabbar" role="tablist" aria-label="メインナビゲーション">
+    <div class="tabbar-inner">
+      <button class="tab active" data-tab="today" role="tab" aria-selected="true" aria-label="今日">
+        <svg class="sym filled" viewBox="0 0 24 24"><path d="M4 8h16v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8z" fill="currentColor" stroke="none"/><path d="M4 8V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2H4z" fill="currentColor" stroke="none"/><circle cx="12" cy="14" r="3" fill="#fff"/></svg>
+        <span>今日</span>
+      </button>
+      <button class="tab" data-tab="methods" role="tab" aria-selected="false" aria-label="手法">
+        <svg class="sym" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><circle cx="8" cy="7.5" r="0.6" fill="currentColor"/><circle cx="11" cy="7.5" r="0.6" fill="currentColor"/></svg>
+        <span>手法</span>
+      </button>
+      <button class="tab" data-tab="insights" role="tab" aria-selected="false" aria-label="振り返り">
+        <svg class="sym" viewBox="0 0 24 24"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>
+        <span>振り返り</span>
+      </button>
+      <button class="tab" data-tab="settings" role="tab" aria-selected="false" aria-label="設定">
+        <svg class="sym" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9c.39.16.74.39 1 .7"/></svg>
+        <span>設定</span>
+      </button>
+    </div>
+  </nav>
+
+</div>
+
+<!-- ============================================================
+     Sheets (overlays)
+     ============================================================ -->
+<div class="scrim" id="scrim"></div>
+
+<!-- Method detail sheet -->
+<div class="sheet" id="sheet-method" role="dialog" aria-modal="true" aria-label="手法詳細">
+  <div class="sheet-handle"></div>
+  <div class="sheet-nav">
+    <div class="leading"></div>
+    <div class="title" id="method-sheet-title">手法</div>
+    <div class="trailing"><button class="bar-btn" data-close-sheet="sheet-method">閉じる</button></div>
+  </div>
+  <div class="sheet-body" id="method-sheet-body"></div>
+</div>
+
+<!-- Session sheet -->
+<div class="sheet" id="sheet-session" role="dialog" aria-modal="true" aria-label="セッション">
+  <div class="sheet-handle"></div>
+  <div class="sheet-nav">
+    <div class="leading"><button class="bar-btn" id="session-cancel">中止</button></div>
+    <div class="title">セッション</div>
+    <div class="trailing"><button class="bar-btn bold" id="session-done">完了</button></div>
+  </div>
+  <div class="sheet-body">
+    <div class="session">
+      <div class="method-name" id="session-method-tag">手法</div>
+      <div class="method-title" id="session-method-title">準備中</div>
+
+      <div class="session-prompt" id="session-prompt" style="display:none;">
+        <div class="prompt-label" style="margin-bottom: 6px;">問い</div>
+        <div id="session-prompt-text"></div>
+      </div>
+
+      <div class="session-guide" id="session-guide"></div>
+
+      <div class="dur-chips" id="dur-chips"></div>
+
+      <div class="timer-stage">
+        <div class="timer-circle">
+          <svg viewBox="0 0 280 280" width="260" height="260" aria-hidden="true">
+            <circle class="timer-bg-ring" cx="140" cy="140" r="124"/>
+            <circle id="timer-fg-ring" class="timer-fg-ring" cx="140" cy="140" r="124"
+              stroke-dasharray="779" stroke-dashoffset="0"
+              transform="rotate(-90 140 140)"/>
+          </svg>
+          <div class="timer-text">
+            <div class="clock" id="timer-clock">05:00</div>
+            <div class="label" id="timer-label">準備OK</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="session-controls">
+        <button class="btn btn-filled" id="timer-toggle">開始</button>
+      </div>
+
+      <div class="session-foot">
+        紙とペンを手元に。書いている間、画面はオフにしてかまいません。<br>
+        指定時間が経つとそっと振動でお知らせします。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Log (after session) sheet -->
+<div class="sheet" id="sheet-log" role="dialog" aria-modal="true" aria-label="記録する">
+  <div class="sheet-handle"></div>
+  <div class="sheet-nav">
+    <div class="leading"></div>
+    <div class="title">記録する</div>
+    <div class="trailing"></div>
+  </div>
+  <div class="sheet-body">
+    <div class="log-head">
+      <h2>おつかれさま。</h2>
+      <p id="log-sub">手法 · 時間</p>
+    </div>
+    <div class="field-label" style="margin: var(--s-4) var(--s-4) var(--s-2); padding-left: 0;">今の気分(任意)</div>
+    <div class="mood-row" id="mood-row">
+      <button class="mood-btn" data-mood="1" aria-label="つらい"><span class="emoji">😢</span><span>つらい</span></button>
+      <button class="mood-btn" data-mood="2" aria-label="もやもや"><span class="emoji">😕</span><span>もやもや</span></button>
+      <button class="mood-btn" data-mood="3" aria-label="ふつう"><span class="emoji">😐</span><span>ふつう</span></button>
+      <button class="mood-btn" data-mood="4" aria-label="すこし軽い"><span class="emoji">🙂</span><span>すこし軽い</span></button>
+      <button class="mood-btn" data-mood="5" aria-label="穏やか"><span class="emoji">😊</span><span>穏やか</span></button>
+    </div>
+    <div class="field">
+      <div class="field-label" style="padding-left:0;">見出しメモ(任意・短く)</div>
+      <input class="field-input" type="text" id="log-note" maxlength="40" placeholder="例: 仕事の不安、母との会話、感謝" autocomplete="off" />
+      <div class="field-hint">本文はここに書かないでください。アプリには見出しだけ残します。</div>
+    </div>
+    <div class="actions-stack" style="margin-top: var(--s-3);">
+      <button class="btn btn-filled block" id="log-save">記録する</button>
+      <button class="btn-plain block" id="log-skip-meta" style="text-align:center;">何も記録せず終わる</button>
+    </div>
+    <div class="spacer-lg"></div>
+  </div>
+</div>
+
+<!-- Entry detail sheet -->
+<div class="sheet" id="sheet-detail" role="dialog" aria-modal="true" aria-label="記録の詳細">
+  <div class="sheet-handle"></div>
+  <div class="sheet-nav">
+    <div class="leading"></div>
+    <div class="title">記録</div>
+    <div class="trailing"><button class="bar-btn" data-close-sheet="sheet-detail">閉じる</button></div>
+  </div>
+  <div class="sheet-body" id="sheet-detail-body"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal-scrim" id="modal-scrim">
+  <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="modal-title">
+    <h3 id="modal-title">タイトル</h3>
+    <p id="modal-body">本文</p>
+    <div class="modal-extra" id="modal-extra"></div>
+    <div class="modal-actions">
+      <button class="btn btn-tinted" id="modal-cancel">キャンセル</button>
+      <button class="btn btn-filled" id="modal-ok">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="./app.js" defer></script>
+</body>
+</html>

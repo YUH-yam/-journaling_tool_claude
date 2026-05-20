@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <rect width="192" height="192" rx="36" fill="#f4ede1"/>
+  <!-- Notebook -->
+  <rect x="54" y="38" width="84" height="118" rx="6" fill="#fffdf5" stroke="#d8b88a" stroke-width="3"/>
+  <!-- Ruled lines -->
+  <line x1="68" y1="64" x2="124" y2="64" stroke="#c8d3bd" stroke-width="3" stroke-linecap="round"/>
+  <line x1="68" y1="82" x2="124" y2="82" stroke="#c8d3bd" stroke-width="3" stroke-linecap="round"/>
+  <line x1="68" y1="100" x2="118" y2="100" stroke="#c8d3bd" stroke-width="3" stroke-linecap="round"/>
+  <line x1="68" y1="118" x2="122" y2="118" stroke="#c8d3bd" stroke-width="3" stroke-linecap="round"/>
+  <line x1="68" y1="136" x2="108" y2="136" stroke="#c8d3bd" stroke-width="3" stroke-linecap="round"/>
+  <!-- Red margin line -->
+  <line x1="63" y1="46" x2="63" y2="148" stroke="#e7b8b3" stroke-width="1.5" opacity="0.7"/>
+  <!-- Pen nib -->
+  <path d="M124 134 L 158 100 L 166 108 L 132 142 Z" fill="#7a8a6f"/>
+  <path d="M158 100 L 166 108 L 172 96 Z" fill="#5d6b54"/>
+  <circle cx="129" cy="138" r="2.5" fill="#fffdf5"/>
+</svg>

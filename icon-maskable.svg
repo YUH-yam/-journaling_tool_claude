@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Safe zone: keep all content within 40% center (between 102 and 410) -->
+  <rect width="512" height="512" fill="#f4ede1"/>
+  <rect x="180" y="146" width="152" height="220" rx="12" fill="#fffdf5" stroke="#d8b88a" stroke-width="6"/>
+  <line x1="208" y1="194" x2="306" y2="194" stroke="#c8d3bd" stroke-width="6" stroke-linecap="round"/>
+  <line x1="208" y1="228" x2="306" y2="228" stroke="#c8d3bd" stroke-width="6" stroke-linecap="round"/>
+  <line x1="208" y1="262" x2="294" y2="262" stroke="#c8d3bd" stroke-width="6" stroke-linecap="round"/>
+  <line x1="208" y1="296" x2="298" y2="296" stroke="#c8d3bd" stroke-width="6" stroke-linecap="round"/>
+  <line x1="208" y1="330" x2="278" y2="330" stroke="#c8d3bd" stroke-width="6" stroke-linecap="round"/>
+  <line x1="194" y1="162" x2="194" y2="350" stroke="#e7b8b3" stroke-width="3" opacity="0.7"/>
+  <path d="M308 310 L 374 244 L 388 258 L 322 326 Z" fill="#7a8a6f"/>
+  <path d="M374 244 L 388 258 L 398 232 Z" fill="#5d6b54"/>
+  <circle cx="318" cy="319" r="4" fill="#fffdf5"/>
+</svg>
