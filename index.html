@@ -151,9 +151,16 @@
 
     <!-- 脚注リンク -->
     <div class="today-foot">
-      <button class="foot-link" id="cta-pick">ほかの書き方を見る</button>
+      <button class="foot-link" id="prep-btn">心を整える</button>
+      <span class="foot-dot" aria-hidden="true">·</span>
+      <button class="foot-link" id="cta-pick">書き方を選ぶ</button>
       <span class="foot-dot" aria-hidden="true">·</span>
       <button class="foot-link" id="skip-btn">今日は休む</button>
+    </div>
+
+    <!-- 今日のひと言 (毎日変わる短い心がけ) -->
+    <div class="today-hint">
+      <p class="hint-text" id="today-hint">…</p>
     </div>
   </section>
 
@@ -187,10 +194,23 @@
     </div>
 
     <div class="stats-grid">
-      <div class="stat-tile"><div class="l">累計</div><div class="v" id="stat-total">0</div><div class="s">日</div></div>
-      <div class="stat-tile"><div class="l">最長連続</div><div class="v" id="stat-longest">0</div><div class="s">日</div></div>
-      <div class="stat-tile"><div class="l">今月</div><div class="v" id="stat-month">0</div><div class="s">日</div></div>
-      <div class="stat-tile"><div class="l">気分の平均</div><div class="v" id="stat-mood">—</div><div class="s" id="stat-mood-sub">記録なし</div></div>
+      <div class="stat-tile">
+        <div class="l">累計</div>
+        <div class="v-row"><span class="v" id="stat-total">0</span><span class="u">日</span></div>
+      </div>
+      <div class="stat-tile">
+        <div class="l">最長連続</div>
+        <div class="v-row"><span class="v" id="stat-longest">0</span><span class="u">日</span></div>
+      </div>
+      <div class="stat-tile">
+        <div class="l">今月</div>
+        <div class="v-row"><span class="v" id="stat-month">0</span><span class="u">日</span></div>
+      </div>
+      <div class="stat-tile">
+        <div class="l">気分の平均</div>
+        <div class="v-row"><span class="v" id="stat-mood">—</span></div>
+        <div class="s-sub" id="stat-mood-sub">記録なし</div>
+      </div>
     </div>
 
     <div class="chart-card">
@@ -412,6 +432,49 @@
       <button class="foot-link" id="log-skip-meta">気分を選ばずに閉じる</button>
     </div>
     <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- Prep sheet (心を整える: 書く前の頭をまとめる) -->
+<div class="sheet" id="sheet-prep" role="dialog" aria-modal="true" aria-label="心の準備">
+  <div class="sheet-handle"></div>
+  <div class="sheet-nav">
+    <div class="leading"></div>
+    <div class="title">心を整える</div>
+    <div class="trailing"><button class="bar-btn" data-close-sheet="sheet-prep">閉じる</button></div>
+  </div>
+  <div class="sheet-body">
+    <div class="prep">
+      <p class="prep-lead">
+        紙とペンを手元に。<br>
+        ゆっくり呼吸して、頭にあるものに、<br>そっと名前をつけてみましょう。
+      </p>
+
+      <div class="breath-stage" aria-hidden="true">
+        <div class="breath-ring"></div>
+        <div class="breath-text" id="breath-text">吸う</div>
+      </div>
+
+      <p class="prep-q">今、気になっていること(任意)</p>
+      <div class="prep-tags" id="prep-tags">
+        <button class="prep-tag" data-tag="仕事">仕事</button>
+        <button class="prep-tag" data-tag="人間関係">人間関係</button>
+        <button class="prep-tag" data-tag="家族">家族</button>
+        <button class="prep-tag" data-tag="お金">お金</button>
+        <button class="prep-tag" data-tag="健康">健康</button>
+        <button class="prep-tag" data-tag="未来">未来</button>
+        <button class="prep-tag" data-tag="過去">過去</button>
+        <button class="prep-tag" data-tag="自分">自分</button>
+      </div>
+      <p class="prep-note">タップしても記録には残りません。書く対象の手がかりとして。</p>
+
+      <div class="prep-actions">
+        <button class="btn btn-filled block btn-large-cta" id="prep-start">
+          <span>書きはじめる</span>
+          <span class="cta-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 

@@ -3,7 +3,7 @@
    ============================================================ */
 
 const STORAGE_KEY = 'kokoro-note:v2'; // keep v2 key for backward compat
-const APP_VERSION = '3.0';
+const APP_VERSION = '3.1';
 
 // ---------- Methods ----------
 const METHODS = [
@@ -80,6 +80,50 @@ const PROMPTS = [
   '最近、勇気を出せた瞬間はあった?',
   '誰かに頼ってもよさそうな場面は?',
   '今夜、自分に贈れる小さな優しさは?'
+];
+
+// 今日のひと言: 短く、押し付けない、書くことの後押し
+const HINTS = [
+  'うまく書こうとしなくて大丈夫。',
+  '正直に書ければ、それで十分。',
+  '書けない日も、立派な記録です。',
+  '完璧な1回より、不完全な10回。',
+  'ペンを止めなくていい、ただ続けて。',
+  '感情に名前をつけるだけで、半分は整う。',
+  '誰にも見せない言葉だから、書ける。',
+  '書いた紙は、後で破いても燃やしてもいい。',
+  '思考は、頭の中より紙の上が静か。',
+  '「書くことがない」と書けば、それも記録。',
+  '5分でも、頭の容量は確実に空く。',
+  '昨日の自分と比べない。今日の自分とだけ会う。',
+  '書きながら、答えを急がなくていい。',
+  '同じことを何度書いてもいい。気が済むまで。',
+  '感情に「正しい」も「間違い」もない。',
+  '一行だけ書いて閉じる夜があっていい。',
+  '紙に書き出すことは、自分への小さな信頼。',
+  '思い出さなくていい。今、ここから書きはじめる。',
+  '言葉にできないことは、「言葉にできない」と書く。',
+  '体の感覚を一つ書くだけで、十分な記録になる。',
+  '判断しないで、ただ流す。',
+  '怒りも悲しみも、書けば少し小さくなる。',
+  '自分にやさしくするのは、甘えではない。',
+  '休む選択は、続けるための選択。',
+  '紙の上では、誰かを傷つけずに本音を吐ける。',
+  '書いた後の余韻に、少しだけ留まってみる。',
+  '読み返さなくていい、今は書くだけで。',
+  '深呼吸ひとつで、文章は変わる。',
+  '迷ったら、いちばん書きたくないことを書く。',
+  '今日の気分は、明日には消える。だから残す。',
+  '比較は紙の外で。紙の上は自分だけの場所。',
+  '書いて疲れたら、それは整った合図。',
+  '誰の役にも立たないことを書いていい。',
+  '言葉が出ない日は、絵でも記号でも。',
+  '同じ問いを何度問い直してもいい。',
+  '完成させなくていい。途中で閉じてもいい。',
+  '心と紙の距離は、ペンの先で縮まる。',
+  '一人になる時間は、自分にあげる贈りもの。',
+  'できなかったことより、できたことを数える夜。',
+  '紙に書いた瞬間、それはもう自分の外にある。'
 ];
 
 const APPS_SCRIPT_CODE = `function doPost(e) {
@@ -182,6 +226,14 @@ function shufflePrompt() {
   save();
   const el = document.getElementById('today-prompt'); if (el) el.textContent = todayPrompt();
   const sp = document.getElementById('session-prompt-text'); if (sp) sp.textContent = todayPrompt();
+}
+
+// ---------- Hint (今日のひと言) ----------
+function todayHint() {
+  const d = new Date();
+  // 問い(prompt)とは別のローテーション。日替わりで毎日違うヒントが出る。
+  const seed = d.getFullYear()*100 + (d.getMonth()+1)*7 + d.getDate() + 17;
+  return HINTS[seed % HINTS.length];
 }
 
 // ---------- Session CRUD & streak ----------
@@ -313,6 +365,8 @@ function renderToday() {
   document.getElementById('cta-sub').textContent = copy.ctaSub;
   document.getElementById('today-streak').textContent = copy.streak;
   document.getElementById('today-prompt').textContent = todayPrompt();
+  const hintEl = document.getElementById('today-hint');
+  if (hintEl) hintEl.textContent = todayHint();
 }
 
 function renderEntry(s) {
@@ -514,6 +568,39 @@ function skipLogMeta() {
   closeSheet('sheet-log');
   showToast('お疲れさま。記録しました。');
   renderToday();
+}
+
+// ---------- Prep sheet (心を整える: 書く前の頭をまとめる) ----------
+// シンプル設計: 呼吸アニメ + 任意タグ + 書きはじめるボタンのみ。
+// タグは記録に残さない(プライバシーと「補助ツール」の原則)。
+let breathTimer = null;
+function startBreathCycle() {
+  const el = document.getElementById('breath-text');
+  if (!el) return;
+  el.textContent = '吸う';
+  let phase = 0;
+  breathTimer = setInterval(() => {
+    phase = (phase + 1) % 2;
+    el.textContent = phase === 0 ? '吸う' : '吐く';
+  }, 4000);
+}
+function stopBreathCycle() {
+  if (breathTimer) { clearInterval(breathTimer); breathTimer = null; }
+}
+function openPrep() {
+  // タグ選択を毎回リセット(記録しない)
+  document.querySelectorAll('#sheet-prep .prep-tag').forEach(t => t.classList.remove('active'));
+  openSheet('sheet-prep');
+  startBreathCycle();
+}
+function startSessionFromPrep() {
+  stopBreathCycle();
+  closeSheet('sheet-prep');
+  setTimeout(() => {
+    const beginners = METHODS.filter(m => m.cat === 'beginner');
+    const m = beginners[new Date().getDay() % beginners.length];
+    startSession(m.id);
+  }, 220);
 }
 
 // ---------- Skip-day ----------
@@ -906,6 +993,7 @@ function closeSheet(id) {
   const sh = document.getElementById(id); if (!sh) return;
   sh.classList.remove('open');
   openSheets = openSheets.filter(x => x !== id);
+  if (id === 'sheet-prep') stopBreathCycle();
   if (openSheets.length === 0) {
     document.getElementById('scrim').classList.remove('show');
     document.body.style.overflow = '';
@@ -916,6 +1004,7 @@ function closeAllSheets() {
     const sh = document.getElementById(id); if (sh) sh.classList.remove('open');
   });
   openSheets = [];
+  stopBreathCycle();
   document.getElementById('scrim').classList.remove('show');
   document.body.style.overflow = '';
 }
@@ -957,6 +1046,15 @@ function wire() {
   document.getElementById('cta-pick').addEventListener('click', () => goScreen('methods'));
   document.getElementById('skip-btn').addEventListener('click', handleSkipDay);
   document.getElementById('prompt-shuffle').addEventListener('click', shufflePrompt);
+
+  // 心を整える(prep)
+  const prepBtn = document.getElementById('prep-btn');
+  if (prepBtn) prepBtn.addEventListener('click', openPrep);
+  const prepStart = document.getElementById('prep-start');
+  if (prepStart) prepStart.addEventListener('click', startSessionFromPrep);
+  document.querySelectorAll('#prep-tags .prep-tag').forEach(t => {
+    t.addEventListener('click', () => t.classList.toggle('active'));
+  });
 
   // Session controls
   document.getElementById('timer-toggle').addEventListener('click', toggleTimer);
@@ -1091,13 +1189,14 @@ window.__kokoro = {
   setState(s) { state = s; save(); },
   reset() { localStorage.removeItem(STORAGE_KEY); state = defaultState(); },
   addSession, deleteSession, recomputeStreak,
-  todayKey, daysBetween, todayPrompt, shufflePrompt,
+  todayKey, daysBetween, todayPrompt, shufflePrompt, todayHint,
   startSession, finishSession, cancelSession, startTimer, stopTimer, toggleTimer,
   saveLog, skipLogMeta, handleSkipDay,
+  openPrep, startSessionFromPrep, startBreathCycle, stopBreathCycle,
   buildSyncPayload, exportJSON, buildTodayCopy, renderToday,
   goScreen, openDetailSheet, openMethodDetailSheet,
   openSheet, closeSheet, closeAllSheets,
-  METHODS, PROMPTS, APPS_SCRIPT_CODE, methodById,
+  METHODS, PROMPTS, HINTS, APPS_SCRIPT_CODE, methodById,
   APP_VERSION,
   get session() { return session; },
   get pendingLog() { return pendingLog; },

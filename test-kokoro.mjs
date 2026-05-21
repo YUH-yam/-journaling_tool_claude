@@ -91,8 +91,8 @@ assert(/<meta name="theme-color"[^>]+prefers-color-scheme: dark/.test(html), 'da
 ['today','methods','insights','settings'].forEach(t =>
   assert(html.includes(`data-tab="${t}"`), `tab "${t}" present`));
 
-// Sheets (bottom sheet pattern)
-['sheet-method','sheet-session','sheet-log','sheet-detail'].forEach(id =>
+// Sheets (bottom sheet pattern) — v3.1: prep sheet added
+['sheet-method','sheet-session','sheet-log','sheet-detail','sheet-prep'].forEach(id =>
   assert(html.includes(`id="${id}"`), `${id} bottom sheet present`));
 
 assert(html.includes('id="scrim"'), 'scrim/backdrop present');
@@ -118,6 +118,27 @@ assert(!html.includes('id="log-note"'), 'log-note input removed (no text entry a
 assert(!html.includes('id="log-save"'), 'log-save button removed (mood tap = save)');
 assert(html.includes('id="log-skip-meta"'), 'log-skip-meta still available');
 assert(html.includes('class="log-hint"'), 'log explainer ("選ぶと記録")');
+
+// v3.1: Stat tiles — inline unit (数字の横に「日」)
+assert(html.includes('class="v-row"'), 'stat tiles use inline v-row (number + unit horizontal)');
+assert(html.includes('class="u"'), 'unit span uses .u class for inline 日');
+assert(!/<div class="v" id="stat-total">[^<]*<\/div>\s*<div class="s">日<\/div>/.test(html),
+  'old vertical v/s layout removed');
+
+// v3.1: 心を整える(prep sheet)
+assert(html.includes('id="prep-btn"'), 'prep-btn (今日のフッターから心を整えるを開く) present');
+assert(html.includes('id="prep-start"'), 'prep "書きはじめる" CTA present');
+assert(html.includes('class="prep-tag"'), 'prep tags (気がかりの分類)');
+assert(html.includes('id="breath-text"'), '呼吸ラベル(吸う/吐く)');
+assert(html.includes('class="breath-ring"'), '呼吸アニメ用リング');
+assert(html.includes('id="prep-tags"'), 'prep-tags コンテナ');
+const prepTagCount = (html.match(/class="prep-tag"/g) || []).length;
+assert(prepTagCount >= 6, `prep tags ≥ 6 (got ${prepTagCount})`);
+
+// v3.1: 今日のひと言(hint)
+assert(html.includes('id="today-hint"'), 'today-hint area (今日のひと言) present');
+assert(html.includes('class="today-hint"'), 'today-hint container styled');
+assert(html.includes('class="hint-text"'), 'hint-text styling present');
 
 // Other critical UI
 assert(html.includes('id="skip-btn"'), 'skip-day button present');
@@ -248,7 +269,7 @@ assert(k.daysBetween('2025-01-10','2025-01-11') === 1, 'daysBetween: consecutive
 assert(k.daysBetween('2025-01-10','2025-01-10') === 0, 'daysBetween: same');
 assert(k.daysBetween('2025-01-10','2025-02-01') === 22, 'daysBetween: cross month');
 assert(/^\d{4}-\d{2}-\d{2}$/.test(k.todayKey()), 'todayKey YYYY-MM-DD');
-assert(k.APP_VERSION === '3.0', `APP_VERSION = '3.0' (got ${k.APP_VERSION})`);
+assert(k.APP_VERSION === '3.1', `APP_VERSION = '3.1' (got ${k.APP_VERSION})`);
 
 // Methods
 assert(Array.isArray(k.METHODS) && k.METHODS.length === 10, `METHODS count = 10 (got ${k.METHODS.length})`);
@@ -270,6 +291,19 @@ k.METHODS.forEach(m => {
 // Prompts
 assert(k.PROMPTS.length >= 30, `prompts ≥ 30 (got ${k.PROMPTS.length})`);
 assert(k.PROMPTS.includes(k.todayPrompt()), 'todayPrompt is from pool');
+
+// v3.1: Hints (今日のひと言)
+assert(Array.isArray(k.HINTS), 'HINTS array exposed');
+assert(k.HINTS.length >= 30, `HINTS ≥ 30 (got ${k.HINTS.length})`);
+assert(typeof k.todayHint === 'function', 'todayHint function exposed');
+assert(k.HINTS.includes(k.todayHint()), 'todayHint returns from HINTS pool');
+assert(k.HINTS.every(h => typeof h === 'string' && h.length > 0 && h.length < 60),
+  'each hint is short non-empty string (< 60 chars)');
+
+// v3.1: Prep handlers exposed
+assert(typeof k.openPrep === 'function', 'openPrep function exposed');
+assert(typeof k.startSessionFromPrep === 'function', 'startSessionFromPrep function exposed');
+assert(typeof k.stopBreathCycle === 'function', 'stopBreathCycle function exposed');
 
 // Sessions / streak
 k.reset();
@@ -439,9 +473,11 @@ let openOk = true;
 try {
   k.openSheet('sheet-method');
   k.openSheet('sheet-session');
+  k.openSheet('sheet-prep');
   k.closeAllSheets();
+  k.stopBreathCycle(); // 念のため確実に停止(setIntervalがリークしないことを確認)
 } catch (e) { openOk = false; }
-assert(openOk, 'openSheet / closeAllSheets no throw');
+assert(openOk, 'openSheet / closeAllSheets / stopBreathCycle no throw');
 
 // ============================================================
 // 8. Edge cases

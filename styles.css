@@ -473,6 +473,102 @@ a { color: var(--accent); text-decoration: none; }
 .foot-link:active { color: var(--label-secondary); }
 .foot-dot { color: var(--label-quaternary); font-size: var(--t-footnote); }
 
+/* 今日のひと言: Today画面の最下部にそっと置く一行 */
+.today-hint {
+  margin: var(--s-3) var(--s-5) var(--s-6);
+  padding-top: var(--s-4);
+  border-top: 0.5px solid var(--separator);
+  text-align: center;
+}
+.today-hint .hint-text {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--t-footnote);
+  color: var(--label-tertiary);
+  line-height: 1.85;
+  margin: 0;
+  letter-spacing: 0.005em;
+}
+
+/* ---------- Prep sheet (心を整える: 書く前の頭をまとめる) ---------- */
+.prep {
+  padding: var(--s-2) var(--s-4) var(--s-5);
+  text-align: center;
+}
+.prep-lead {
+  font-size: var(--t-callout);
+  color: var(--label-secondary);
+  line-height: 1.85;
+  margin: var(--s-2) 0 var(--s-4);
+  padding: 0 var(--s-2);
+}
+.breath-stage {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: var(--s-3);
+  padding: var(--s-4) 0 var(--s-5);
+}
+.breath-ring {
+  width: 88px; height: 88px;
+  border-radius: 50%;
+  background: var(--accent-tint);
+  border: 1.5px solid var(--accent);
+  opacity: 0.85;
+  animation: breathPulse 8s ease-in-out infinite;
+}
+@keyframes breathPulse {
+  0%, 100% { transform: scale(1); opacity: 0.65; }
+  50% { transform: scale(1.55); opacity: 1; }
+}
+.breath-text {
+  font-size: var(--t-footnote);
+  color: var(--label-tertiary);
+  letter-spacing: 0.18em;
+  font-weight: 500;
+  min-height: 18px;
+  transition: opacity var(--d-default) var(--ease);
+}
+@media (prefers-reduced-motion: reduce) {
+  .breath-ring { animation: none; opacity: 0.8; }
+}
+.prep-q {
+  font-size: var(--t-subhead);
+  color: var(--label);
+  margin: 0 0 var(--s-3);
+  font-weight: 500;
+}
+.prep-tags {
+  display: flex; flex-wrap: wrap; gap: var(--s-2);
+  justify-content: center;
+  margin: 0 0 var(--s-3);
+  padding: 0 var(--s-2);
+}
+.prep-tag {
+  padding: 8px 16px;
+  background: var(--fill-1);
+  color: var(--label-secondary);
+  border-radius: 999px;
+  font-size: var(--t-footnote);
+  font-weight: 500;
+  transition: background var(--d-fast) var(--ease),
+              color var(--d-fast) var(--ease),
+              transform var(--d-fast) var(--ease);
+}
+.prep-tag:active { transform: scale(0.94); }
+.prep-tag.active {
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-weight: 600;
+}
+.prep-note {
+  font-size: var(--t-caption-1);
+  color: var(--label-tertiary);
+  line-height: 1.75;
+  margin: 0 0 var(--s-5);
+  padding: 0 var(--s-3);
+}
+.prep-actions { padding: 0 var(--s-2); }
+
 /* ---------- Hero (legacy v3.0, kept for backward-compat — unused on Today) ---------- */
 .hero {
   margin: 0 var(--s-4) var(--s-4);
@@ -618,14 +714,34 @@ a { color: var(--accent); text-decoration: none; }
   box-shadow: var(--shadow-1);
 }
 .stat-tile .l { font-size: var(--t-caption-1); color: var(--label-secondary); letter-spacing: 0.04em; }
-.stat-tile .v {
+/* 数字と単位を横並びに(間延びを防ぐ) */
+.stat-tile .v-row {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  margin-top: var(--s-1);
+  line-height: 1.1;
+}
+.stat-tile .v-row .v {
   font-family: var(--font-serif);
   font-size: var(--t-title-2); font-weight: 600;
-  margin-top: var(--s-1);
   font-feature-settings: "tnum" 1;
   color: var(--label);
+  line-height: 1;
 }
-.stat-tile .s { font-size: var(--t-caption-2); color: var(--label-tertiary); }
+.stat-tile .v-row .u {
+  font-size: var(--t-footnote);
+  color: var(--label-tertiary);
+  font-weight: 500;
+  letter-spacing: 0;
+  margin-left: 1px;
+}
+.stat-tile .s-sub {
+  font-size: var(--t-caption-2);
+  color: var(--label-tertiary);
+  margin-top: 2px;
+  letter-spacing: 0.01em;
+}
 
 /* ---------- Chart cards ---------- */
 .chart-card {
