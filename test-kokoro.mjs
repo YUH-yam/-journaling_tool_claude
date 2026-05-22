@@ -1,5 +1,5 @@
 // ============================================================
-//  Test harness for kokoro-note v3 (Apple HIG / split files)
+//  Test harness for kokoro-note v4 (companion-mode redesign)
 // ============================================================
 import fs from 'node:fs';
 import path from 'node:path';
@@ -10,6 +10,7 @@ const here = __dirname;
 const htmlPath = path.join(here, 'index.html');
 const cssPath = path.join(here, 'styles.css');
 const jsPath = path.join(here, 'app.js');
+const quotesPath = path.join(here, 'quotes.js');
 
 let passed = 0, failed = 0;
 const fails = [];
@@ -24,6 +25,7 @@ section('0. ファイル構成 (split HTML/CSS/JS)');
 assert(fs.existsSync(htmlPath), 'index.html exists');
 assert(fs.existsSync(cssPath), 'styles.css exists (separated)');
 assert(fs.existsSync(jsPath), 'app.js exists (separated)');
+assert(fs.existsSync(quotesPath), 'quotes.js exists (v4.0: PD引用集を分離)');
 
 const manifestPath = path.join(here, 'manifest.json');
 const swPath = path.join(here, 'sw.js');
@@ -54,6 +56,7 @@ assert(swSrc.includes('caches.open'), 'sw uses Cache API');
 assert(swSrc.includes('CACHE_NAME'), 'sw has versioned cache name');
 assert(swSrc.includes('./styles.css'), 'sw precaches styles.css');
 assert(swSrc.includes('./app.js'), 'sw precaches app.js');
+assert(swSrc.includes('./quotes.js'), 'sw precaches quotes.js (v4.0)');
 assert(swSrc.includes('script.google.com'), 'sw excludes Apps Script from cache');
 
 // Icons
@@ -73,6 +76,7 @@ assert(/<html lang="ja">/.test(html), 'lang=ja set');
 assert(/<meta name="viewport"[^>]+device-width/.test(html), 'mobile viewport meta');
 assert(/<meta name="viewport"[^>]+viewport-fit=cover/.test(html), 'viewport-fit=cover for safe-area');
 assert(/<link rel="stylesheet" href="\.\/styles\.css"/.test(html), 'styles.css linked externally');
+assert(/<script src="\.\/quotes\.js"/.test(html), 'quotes.js linked externally (v4.0)');
 assert(/<script src="\.\/app\.js"/.test(html), 'app.js linked externally');
 assert(!/<style>/.test(html), 'no inline <style> block');
 const inlineScript = html.match(/<script>([\s\S]+?)<\/script>/);
@@ -101,17 +105,21 @@ assert(html.includes('role="tablist"'), 'tab bar has ARIA role');
 assert(html.includes('role="dialog"'), 'sheets/modal have ARIA role');
 assert(html.includes('aria-modal="true"'), 'modal-style dialogs aria-modal');
 
-// Today screen v3.1 — calm/simplified
+// Today screen v4.0 — 今日のひと言と今日の問いをジャーナリングの種として Today に表示
 assert(html.includes('id="today-headline"'), 'today-headline (adaptive sentence) present');
 assert(html.includes('id="today-streak"'), 'today-streak chip present');
-assert(html.includes('id="today-prompt"'), 'today-prompt (quote) present');
-assert(html.includes('class="today-quote"'), 'quote-style prompt block (not card)');
 assert(html.includes('class="today-foot"'), 'foot links area present');
 assert(html.includes('class="foot-link"'), 'foot-link styling present');
 assert(html.includes('btn-large-cta'), 'large single CTA button styled');
-assert(html.includes('id="cta-sub"'), 'CTA hint/sub present');
+assert(html.includes('id="cta-sub"'), 'CTA hint/sub still present (おすすめ手法)');
 assert(!html.includes('id="recent-list"'), 'recent-list removed from Today (moved to insights)');
 assert(!html.includes('hero-top') || !/<div class="hero"/.test(html), 'old hero card not used on today');
+// v4.0+: 今日のひと言と今日の問いを Today にも残す(ジャーナリングの種)
+assert(/<section[^>]+id="screen-today"[\s\S]*?<p[^>]*id="today-prompt"/.test(html),
+  'Today: 今日の問い(today-prompt) present');
+assert(/<section[^>]+id="screen-today"[\s\S]*?id="today-hint-text"/.test(html),
+  'Today: 今日のひと言(today-hint-text) present');
+assert(html.includes('id="today-hint-attr"'), 'Today: ひと言の出典(today-hint-attr) present');
 
 // Log screen v3.1 — minimal input (tap-to-save)
 assert(!html.includes('id="log-note"'), 'log-note input removed (no text entry after session)');
@@ -125,8 +133,7 @@ assert(html.includes('class="u"'), 'unit span uses .u class for inline 日');
 assert(!/<div class="v" id="stat-total">[^<]*<\/div>\s*<div class="s">日<\/div>/.test(html),
   'old vertical v/s layout removed');
 
-// v3.1: 心を整える(prep sheet)
-assert(html.includes('id="prep-btn"'), 'prep-btn (今日のフッターから心を整えるを開く) present');
+// v4.0: 心を整える(prep sheet) — コンテンツの中心地。今日のひと言・問い・呼吸・タグはここ。
 assert(html.includes('id="prep-start"'), 'prep "書きはじめる" CTA present');
 assert(html.includes('class="prep-tag"'), 'prep tags (気がかりの分類)');
 assert(html.includes('id="breath-text"'), '呼吸ラベル(吸う/吐く)');
@@ -134,11 +141,15 @@ assert(html.includes('class="breath-ring"'), '呼吸アニメ用リング');
 assert(html.includes('id="prep-tags"'), 'prep-tags コンテナ');
 const prepTagCount = (html.match(/class="prep-tag"/g) || []).length;
 assert(prepTagCount >= 6, `prep tags ≥ 6 (got ${prepTagCount})`);
-
-// v3.1: 今日のひと言(hint)
-assert(html.includes('id="today-hint"'), 'today-hint area (今日のひと言) present');
-assert(html.includes('class="today-hint"'), 'today-hint container styled');
-assert(html.includes('class="hint-text"'), 'hint-text styling present');
+// 今日のひと言は Prep 内、振り返り用に出典付き
+assert(/class="[^"]*\bprep-hint\b[^"]*"/.test(html), 'v4.0: prep-hint section present');
+assert(html.includes('id="prep-hint-text"'), 'v4.0: prep-hint-text element');
+assert(html.includes('id="prep-hint-attr"'), 'v4.0: prep-hint-attr (出典)');
+assert(html.includes('id="prep-hint-original"'), 'v4.0: prep-hint-original (外国語原文)');
+assert(html.includes('id="hint-shuffle"'), 'v4.0: hint-shuffle ボタン');
+assert(/class="[^"]*\bprep-prompt\b[^"]*"/.test(html), 'v4.0: prep-prompt section present');
+assert(html.includes('id="prep-prompt-text"'), 'v4.0: prep-prompt-text element');
+assert(html.includes('id="prep-cta-sub"'), 'v4.0: prep-cta-sub (おすすめ手法)');
 
 // Other critical UI
 assert(html.includes('id="skip-btn"'), 'skip-day button present');
@@ -245,8 +256,10 @@ const windowStub = {
 
 let scriptError = null;
 try {
+  // v4.0: quotes.js を先にロードして window.KOKORO_QUOTES を注入
+  const quotesJs = fs.readFileSync(quotesPath, 'utf8');
   const fn = new Function('window','document','localStorage','navigator','URL','Blob','fetch','location',
-    appJs + '\nreturn window.__kokoro;');
+    quotesJs + '\n' + appJs + '\nreturn window.__kokoro;');
   windowStub.__kokoro = fn(
     windowStub, documentStub, localStorageStub,
     navigatorStub, windowStub.URL,
@@ -269,7 +282,7 @@ assert(k.daysBetween('2025-01-10','2025-01-11') === 1, 'daysBetween: consecutive
 assert(k.daysBetween('2025-01-10','2025-01-10') === 0, 'daysBetween: same');
 assert(k.daysBetween('2025-01-10','2025-02-01') === 22, 'daysBetween: cross month');
 assert(/^\d{4}-\d{2}-\d{2}$/.test(k.todayKey()), 'todayKey YYYY-MM-DD');
-assert(k.APP_VERSION === '3.1', `APP_VERSION = '3.1' (got ${k.APP_VERSION})`);
+assert(k.APP_VERSION === '4.0', `APP_VERSION = '4.0' (got ${k.APP_VERSION})`);
 
 // Methods
 assert(Array.isArray(k.METHODS) && k.METHODS.length === 10, `METHODS count = 10 (got ${k.METHODS.length})`);
@@ -292,18 +305,35 @@ k.METHODS.forEach(m => {
 assert(k.PROMPTS.length >= 30, `prompts ≥ 30 (got ${k.PROMPTS.length})`);
 assert(k.PROMPTS.includes(k.todayPrompt()), 'todayPrompt is from pool');
 
-// v3.1: Hints (今日のひと言)
+// v4.0: Hints (今日のひと言) — quotes.js から読み込み、{t, a, o?} の構造、365日被らない
 assert(Array.isArray(k.HINTS), 'HINTS array exposed');
-assert(k.HINTS.length >= 30, `HINTS ≥ 30 (got ${k.HINTS.length})`);
+assert(k.HINTS.length >= 366, `v4.0: HINTS ≥ 366 (1年被らない) (got ${k.HINTS.length})`);
 assert(typeof k.todayHint === 'function', 'todayHint function exposed');
-assert(k.HINTS.includes(k.todayHint()), 'todayHint returns from HINTS pool');
-assert(k.HINTS.every(h => typeof h === 'string' && h.length > 0 && h.length < 60),
-  'each hint is short non-empty string (< 60 chars)');
+assert(typeof k.hintForDate === 'function', 'v4.0: hintForDate function exposed');
+assert(typeof k.shuffleHint === 'function', 'v4.0: shuffleHint function exposed');
+const todayH = k.todayHint();
+assert(todayH && typeof todayH === 'object', 'v4.0: todayHint returns object');
+assert(typeof todayH.t === 'string' && todayH.t.length > 0, 'v4.0: hint has t (本文/訳文)');
+assert(typeof todayH.a === 'string' && todayH.a.length > 0, 'v4.0: hint has a (出典)');
+assert(k.HINTS.every(h => h && typeof h.t === 'string' && typeof h.a === 'string'),
+  'v4.0: all hints are {t, a} objects with attribution');
+assert(k.HINTS.every(h => h.t.length > 0 && h.t.length < 140),
+  'v4.0: each hint text is reasonable length (< 140 chars)');
+// 365日連続でユニークなことを確認
+const seen = new Set();
+for (let i = 0; i < 365; i++) {
+  const d = new Date(2026, 0, 1); d.setDate(d.getDate() + i);
+  const h = k.hintForDate(d);
+  seen.add(h.t);
+}
+assert(seen.size === 365, `v4.0: 365日連続で被らない (got ${seen.size} unique)`);
 
-// v3.1: Prep handlers exposed
+// v4.0: Prep handlers exposed
 assert(typeof k.openPrep === 'function', 'openPrep function exposed');
 assert(typeof k.startSessionFromPrep === 'function', 'startSessionFromPrep function exposed');
 assert(typeof k.stopBreathCycle === 'function', 'stopBreathCycle function exposed');
+assert(typeof k.renderPrepHint === 'function', 'v4.0: renderPrepHint exposed');
+assert(typeof k.renderPrepPrompt === 'function', 'v4.0: renderPrepPrompt exposed');
 
 // Sessions / streak
 k.reset();

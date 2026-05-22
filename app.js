@@ -3,7 +3,7 @@
    ============================================================ */
 
 const STORAGE_KEY = 'kokoro-note:v2'; // keep v2 key for backward compat
-const APP_VERSION = '3.1';
+const APP_VERSION = '4.0';
 
 // ---------- Methods ----------
 const METHODS = [
@@ -82,49 +82,16 @@ const PROMPTS = [
   '今夜、自分に贈れる小さな優しさは?'
 ];
 
-// 今日のひと言: 短く、押し付けない、書くことの後押し
-const HINTS = [
-  'うまく書こうとしなくて大丈夫。',
-  '正直に書ければ、それで十分。',
-  '書けない日も、立派な記録です。',
-  '完璧な1回より、不完全な10回。',
-  'ペンを止めなくていい、ただ続けて。',
-  '感情に名前をつけるだけで、半分は整う。',
-  '誰にも見せない言葉だから、書ける。',
-  '書いた紙は、後で破いても燃やしてもいい。',
-  '思考は、頭の中より紙の上が静か。',
-  '「書くことがない」と書けば、それも記録。',
-  '5分でも、頭の容量は確実に空く。',
-  '昨日の自分と比べない。今日の自分とだけ会う。',
-  '書きながら、答えを急がなくていい。',
-  '同じことを何度書いてもいい。気が済むまで。',
-  '感情に「正しい」も「間違い」もない。',
-  '一行だけ書いて閉じる夜があっていい。',
-  '紙に書き出すことは、自分への小さな信頼。',
-  '思い出さなくていい。今、ここから書きはじめる。',
-  '言葉にできないことは、「言葉にできない」と書く。',
-  '体の感覚を一つ書くだけで、十分な記録になる。',
-  '判断しないで、ただ流す。',
-  '怒りも悲しみも、書けば少し小さくなる。',
-  '自分にやさしくするのは、甘えではない。',
-  '休む選択は、続けるための選択。',
-  '紙の上では、誰かを傷つけずに本音を吐ける。',
-  '書いた後の余韻に、少しだけ留まってみる。',
-  '読み返さなくていい、今は書くだけで。',
-  '深呼吸ひとつで、文章は変わる。',
-  '迷ったら、いちばん書きたくないことを書く。',
-  '今日の気分は、明日には消える。だから残す。',
-  '比較は紙の外で。紙の上は自分だけの場所。',
-  '書いて疲れたら、それは整った合図。',
-  '誰の役にも立たないことを書いていい。',
-  '言葉が出ない日は、絵でも記号でも。',
-  '同じ問いを何度問い直してもいい。',
-  '完成させなくていい。途中で閉じてもいい。',
-  '心と紙の距離は、ペンの先で縮まる。',
-  '一人になる時間は、自分にあげる贈りもの。',
-  'できなかったことより、できたことを数える夜。',
-  '紙に書いた瞬間、それはもう自分の外にある。'
-];
+// 今日のひと言: quotes.js (window.KOKORO_QUOTES) から読み込む。
+// 各エントリは { t: 訳文/本文, a: 著者・出典, o?: 原文 (外国語の場合) }。
+// フォールバック: quotes.js が読まれていない場合の最低限の備え。
+const HINTS = (typeof window !== 'undefined' && Array.isArray(window.KOKORO_QUOTES) && window.KOKORO_QUOTES.length)
+  ? window.KOKORO_QUOTES
+  : [
+      { t: '初心忘るべからず。', a: '世阿弥' },
+      { t: '上善若水。', a: '老子' },
+      { t: '七転び八起き。', a: 'ことわざ' }
+    ];
 
 const APPS_SCRIPT_CODE = `function doPost(e) {
   try {
@@ -224,16 +191,28 @@ function todayPrompt() {
 function shufflePrompt() {
   state.promptSeed = (state.promptSeed||0) + 1;
   save();
-  const el = document.getElementById('today-prompt'); if (el) el.textContent = todayPrompt();
-  const sp = document.getElementById('session-prompt-text'); if (sp) sp.textContent = todayPrompt();
+  const p = todayPrompt();
+  const el = document.getElementById('today-prompt'); if (el) el.textContent = p;       // Today
+  const pp = document.getElementById('prep-prompt-text'); if (pp) pp.textContent = p;    // Prep
+  const sp = document.getElementById('session-prompt-text'); if (sp) sp.textContent = p; // Session
 }
 
 // ---------- Hint (今日のひと言) ----------
-function todayHint() {
-  const d = new Date();
-  // 問い(prompt)とは別のローテーション。日替わりで毎日違うヒントが出る。
-  const seed = d.getFullYear()*100 + (d.getMonth()+1)*7 + d.getDate() + 17;
-  return HINTS[seed % HINTS.length];
+// 日数ベースのseedで、365日連続して同じヒントが出ないことを保証する。
+// HINTS.length が 366 以上であれば、1年間被らない。
+function hintForDate(d) {
+  const len = (HINTS && HINTS.length) ? HINTS.length : 1;
+  const dayNum = Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000);
+  // promptSeed をシフト量として加算 (シャッフルボタンで日跨ぎを擬似的に変える)
+  const seed = dayNum + (state.promptSeed || 0);
+  return HINTS[((seed % len) + len) % len];
+}
+function todayHint() { return hintForDate(new Date()); }
+function shuffleHint() {
+  state.promptSeed = (state.promptSeed || 0) + 1;
+  save();
+  renderPrepHint();
+  renderTodayHint();
 }
 
 // ---------- Session CRUD & streak ----------
@@ -364,9 +343,41 @@ function renderToday() {
   document.getElementById('cta-label').textContent = copy.ctaLabel;
   document.getElementById('cta-sub').textContent = copy.ctaSub;
   document.getElementById('today-streak').textContent = copy.streak;
-  document.getElementById('today-prompt').textContent = todayPrompt();
-  const hintEl = document.getElementById('today-hint');
-  if (hintEl) hintEl.textContent = todayHint();
+  // 今日のひと言と今日の問いは Today にもジャーナリングの種として表示し、Prepと同じ内容を同期
+  renderTodayHint();
+  const tp = document.getElementById('today-prompt');
+  if (tp) tp.textContent = todayPrompt();
+}
+
+// Prep シート内の「今日のひと言」を描画(出典付き、外国語は原文も表示)
+function renderPrepHint() {
+  const h = todayHint();
+  if (!h) return;
+  const textEl = document.getElementById('prep-hint-text');
+  const origEl = document.getElementById('prep-hint-original');
+  const attrEl = document.getElementById('prep-hint-attr');
+  if (textEl) textEl.textContent = h.t || '';
+  if (origEl) {
+    if (h.o) { origEl.textContent = h.o; origEl.hidden = false; }
+    else { origEl.textContent = ''; origEl.hidden = true; }
+  }
+  if (attrEl) attrEl.textContent = h.a ? ('— ' + h.a) : '—';
+}
+
+// Prep シート内の「今日の問い」を描画
+function renderPrepPrompt() {
+  const el = document.getElementById('prep-prompt-text');
+  if (el) el.textContent = todayPrompt();
+}
+
+// Today画面の「今日のひと言」描画 — Prepと同じソース。
+function renderTodayHint() {
+  const h = todayHint();
+  if (!h) return;
+  const t = document.getElementById('today-hint-text');
+  const a = document.getElementById('today-hint-attr');
+  if (t) t.textContent = h.t || '';
+  if (a) a.textContent = h.a ? ('— ' + h.a) : '—';
 }
 
 function renderEntry(s) {
@@ -590,6 +601,16 @@ function stopBreathCycle() {
 function openPrep() {
   // タグ選択を毎回リセット(記録しない)
   document.querySelectorAll('#sheet-prep .prep-tag').forEach(t => t.classList.remove('active'));
+  // 今日のひと言・問いを描画
+  renderPrepHint();
+  renderPrepPrompt();
+  // 推奨手法を「書きはじめる」ボタン下のサブテキストへ
+  const subEl = document.getElementById('prep-cta-sub');
+  if (subEl) {
+    const beginners = METHODS.filter(m => m.cat === 'beginner');
+    const m = beginners[new Date().getDay() % beginners.length];
+    subEl.textContent = `おすすめ: ${m.name} · ${Math.round(m.defaultDuration/60)}分`;
+  }
   openSheet('sheet-prep');
   startBreathCycle();
 }
@@ -1036,22 +1057,20 @@ function wire() {
   document.querySelectorAll('.tabbar .tab').forEach(t =>
     t.addEventListener('click', () => goScreen(t.dataset.tab)));
 
-  // Today CTAs
-  document.getElementById('cta-write').addEventListener('click', () => {
-    // Smart default: rotate beginner methods by weekday
-    const beginners = METHODS.filter(m => m.cat === 'beginner');
-    const m = beginners[new Date().getDay() % beginners.length];
-    startSession(m.id);
-  });
+  // Today CTAs — 書く前にまず「整える」を必ず通す
+  document.getElementById('cta-write').addEventListener('click', openPrep);
   document.getElementById('cta-pick').addEventListener('click', () => goScreen('methods'));
   document.getElementById('skip-btn').addEventListener('click', handleSkipDay);
-  document.getElementById('prompt-shuffle').addEventListener('click', shufflePrompt);
+  const ps = document.getElementById('prompt-shuffle');
+  if (ps) ps.addEventListener('click', shufflePrompt);
 
   // 心を整える(prep)
   const prepBtn = document.getElementById('prep-btn');
   if (prepBtn) prepBtn.addEventListener('click', openPrep);
   const prepStart = document.getElementById('prep-start');
   if (prepStart) prepStart.addEventListener('click', startSessionFromPrep);
+  const hintShuffle = document.getElementById('hint-shuffle');
+  if (hintShuffle) hintShuffle.addEventListener('click', shuffleHint);
   document.querySelectorAll('#prep-tags .prep-tag').forEach(t => {
     t.addEventListener('click', () => t.classList.toggle('active'));
   });
@@ -1189,10 +1208,11 @@ window.__kokoro = {
   setState(s) { state = s; save(); },
   reset() { localStorage.removeItem(STORAGE_KEY); state = defaultState(); },
   addSession, deleteSession, recomputeStreak,
-  todayKey, daysBetween, todayPrompt, shufflePrompt, todayHint,
+  todayKey, daysBetween, todayPrompt, shufflePrompt, todayHint, hintForDate, shuffleHint,
   startSession, finishSession, cancelSession, startTimer, stopTimer, toggleTimer,
   saveLog, skipLogMeta, handleSkipDay,
   openPrep, startSessionFromPrep, startBreathCycle, stopBreathCycle,
+  renderPrepHint, renderPrepPrompt, renderTodayHint,
   buildSyncPayload, exportJSON, buildTodayCopy, renderToday,
   goScreen, openDetailSheet, openMethodDetailSheet,
   openSheet, closeSheet, closeAllSheets,

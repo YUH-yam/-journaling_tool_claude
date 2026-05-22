@@ -2,11 +2,12 @@
    こころノート — Service Worker
    オフライン対応のキャッシュ
    ============================================================ */
-const CACHE_NAME = 'kokoro-note-v3.0.0';
+const CACHE_NAME = 'kokoro-note-v4.0.0';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
+  './quotes.js',
   './app.js',
   './manifest.json',
   './icon-192.svg',

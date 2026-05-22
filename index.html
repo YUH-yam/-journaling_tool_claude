@@ -131,6 +131,15 @@
     <!-- 連続日数(さりげない励まし) -->
     <div class="today-streak" id="today-streak" aria-live="polite">🌱 はじめての夜</div>
 
+    <!-- 今日のひと言 (ジャーナリングの種) -->
+    <blockquote class="today-hint" aria-label="今日のひと言">
+      <p class="hint-text" id="today-hint-text">…</p>
+      <p class="hint-attr" id="today-hint-attr">—</p>
+    </blockquote>
+
+    <!-- 今日の問い (書きはじめる前のインスピレーション) -->
+    <p class="today-quote" id="today-prompt" aria-label="今日の問い">…</p>
+
     <!-- 唯一の大きなボタン -->
     <div class="today-primary">
       <button class="btn btn-filled block btn-large-cta" id="cta-write">
@@ -140,27 +149,11 @@
       <div class="cta-hint" id="cta-sub">おすすめ: 3行ジャーナル · 3分</div>
     </div>
 
-    <!-- 今日の問い(引用風・控えめ) -->
-    <div class="today-quote">
-      <div class="quote-label">今日の問い</div>
-      <p class="quote-text" id="today-prompt">…</p>
-      <button class="quote-shuffle" id="prompt-shuffle" aria-label="別の問いを見る">
-        <svg class="sym" viewBox="0 0 24 24" style="width:14px;height:14px;stroke-width:1.8;"><path d="M3 12a9 9 0 0 1 16.5-5"/><path d="M21 4v5h-5"/><path d="M21 12a9 9 0 0 1-16.5 5"/><path d="M3 20v-5h5"/></svg>
-      </button>
-    </div>
-
-    <!-- 脚注リンク -->
+    <!-- 脚注リンク (シンプル: 別の書き方 / 休む のみ) -->
     <div class="today-foot">
-      <button class="foot-link" id="prep-btn">心を整える</button>
-      <span class="foot-dot" aria-hidden="true">·</span>
       <button class="foot-link" id="cta-pick">書き方を選ぶ</button>
       <span class="foot-dot" aria-hidden="true">·</span>
       <button class="foot-link" id="skip-btn">今日は休む</button>
-    </div>
-
-    <!-- 今日のひと言 (毎日変わる短い心がけ) -->
-    <div class="today-hint">
-      <p class="hint-text" id="today-hint">…</p>
     </div>
   </section>
 
@@ -447,32 +440,62 @@
     <div class="prep">
       <p class="prep-lead">
         紙とペンを手元に。<br>
-        ゆっくり呼吸して、頭にあるものに、<br>そっと名前をつけてみましょう。
+        ゆっくり呼吸して、頭の中を、<br>そっと整えていきましょう。
       </p>
 
+      <!-- 1. 呼吸 -->
       <div class="breath-stage" aria-hidden="true">
         <div class="breath-ring"></div>
         <div class="breath-text" id="breath-text">吸う</div>
       </div>
 
-      <p class="prep-q">今、気になっていること(任意)</p>
-      <div class="prep-tags" id="prep-tags">
-        <button class="prep-tag" data-tag="仕事">仕事</button>
-        <button class="prep-tag" data-tag="人間関係">人間関係</button>
-        <button class="prep-tag" data-tag="家族">家族</button>
-        <button class="prep-tag" data-tag="お金">お金</button>
-        <button class="prep-tag" data-tag="健康">健康</button>
-        <button class="prep-tag" data-tag="未来">未来</button>
-        <button class="prep-tag" data-tag="過去">過去</button>
-        <button class="prep-tag" data-tag="自分">自分</button>
+      <!-- 2. 今日のひと言(振り返り用、出典付き) -->
+      <div class="prep-section prep-hint">
+        <div class="prep-section-head">
+          <span class="prep-section-label">今日のひと言</span>
+          <button class="quote-shuffle" id="hint-shuffle" aria-label="別のひと言を見る" type="button">
+            <svg class="sym" viewBox="0 0 24 24" style="width:14px;height:14px;stroke-width:1.8;"><path d="M3 12a9 9 0 0 1 16.5-5"/><path d="M21 4v5h-5"/><path d="M21 12a9 9 0 0 1-16.5 5"/><path d="M3 20v-5h5"/></svg>
+          </button>
+        </div>
+        <p class="hint-text" id="prep-hint-text">…</p>
+        <p class="hint-original" id="prep-hint-original" hidden></p>
+        <p class="hint-attr" id="prep-hint-attr">—</p>
       </div>
-      <p class="prep-note">タップしても記録には残りません。書く対象の手がかりとして。</p>
 
+      <!-- 3. 今日の問い -->
+      <div class="prep-section prep-prompt">
+        <div class="prep-section-head">
+          <span class="prep-section-label">今日の問い</span>
+          <button class="quote-shuffle" id="prompt-shuffle" aria-label="別の問いを見る" type="button">
+            <svg class="sym" viewBox="0 0 24 24" style="width:14px;height:14px;stroke-width:1.8;"><path d="M3 12a9 9 0 0 1 16.5-5"/><path d="M21 4v5h-5"/><path d="M21 12a9 9 0 0 1-16.5 5"/><path d="M3 20v-5h5"/></svg>
+          </button>
+        </div>
+        <p class="prompt-text" id="prep-prompt-text">…</p>
+      </div>
+
+      <!-- 4. 気がかりタグ -->
+      <div class="prep-section">
+        <p class="prep-section-label center">今、気になっていること(任意)</p>
+        <div class="prep-tags" id="prep-tags">
+          <button class="prep-tag" data-tag="仕事">仕事</button>
+          <button class="prep-tag" data-tag="人間関係">人間関係</button>
+          <button class="prep-tag" data-tag="家族">家族</button>
+          <button class="prep-tag" data-tag="お金">お金</button>
+          <button class="prep-tag" data-tag="健康">健康</button>
+          <button class="prep-tag" data-tag="未来">未来</button>
+          <button class="prep-tag" data-tag="過去">過去</button>
+          <button class="prep-tag" data-tag="自分">自分</button>
+        </div>
+        <p class="prep-note">タップしても記録には残りません。書く対象の手がかりとして。</p>
+      </div>
+
+      <!-- 5. 開始ボタン -->
       <div class="prep-actions">
         <button class="btn btn-filled block btn-large-cta" id="prep-start">
           <span>書きはじめる</span>
           <span class="cta-arrow" aria-hidden="true">→</span>
         </button>
+        <p class="prep-cta-sub" id="prep-cta-sub">おすすめ: 3行ジャーナル · 3分</p>
       </div>
     </div>
   </div>
@@ -504,6 +527,7 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script src="./quotes.js" defer></script>
 <script src="./app.js" defer></script>
 </body>
 </html>

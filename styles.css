@@ -423,8 +423,42 @@ a { color: var(--accent); text-decoration: none; }
   letter-spacing: 0.02em;
 }
 
+/* 今日のひと言(Today画面) — 出典付き、ジャーナリングの種 */
+.today-hint {
+  margin: var(--s-5) var(--s-5) var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border-left: 2px solid var(--accent-tint);
+  background: var(--fill-1);
+  border-radius: var(--r-3);
+}
+.today-hint .hint-text {
+  font-family: var(--font-serif);
+  font-size: var(--t-callout);
+  line-height: 1.7;
+  color: var(--label);
+  margin: 0;
+  letter-spacing: -0.003em;
+}
+.today-hint .hint-attr {
+  font-size: var(--t-caption-2);
+  color: var(--label-tertiary);
+  margin: var(--s-2) 0 0;
+  text-align: right;
+  letter-spacing: 0.02em;
+}
+
 /* 今日の問い: 引用風(CTAではない、雰囲気として置く) */
 .today-quote {
+  font-family: var(--font-serif);
+  font-size: var(--t-callout);
+  line-height: 1.75;
+  color: var(--label-secondary);
+  margin: var(--s-3) var(--s-5) var(--s-5);
+  padding: 2px var(--s-4);
+  border-left: 2px solid var(--accent-tint);
+  letter-spacing: -0.003em;
+}
+.today-quote-block {
   margin: var(--s-6) var(--s-5) var(--s-4);
   padding: 2px var(--s-4) 2px var(--s-4);
   border-left: 2px solid var(--accent-tint);
@@ -473,24 +507,9 @@ a { color: var(--accent); text-decoration: none; }
 .foot-link:active { color: var(--label-secondary); }
 .foot-dot { color: var(--label-quaternary); font-size: var(--t-footnote); }
 
-/* 今日のひと言: Today画面の最下部にそっと置く一行 */
-.today-hint {
-  margin: var(--s-3) var(--s-5) var(--s-6);
-  padding-top: var(--s-4);
-  border-top: 0.5px solid var(--separator);
-  text-align: center;
-}
-.today-hint .hint-text {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: var(--t-footnote);
-  color: var(--label-tertiary);
-  line-height: 1.85;
-  margin: 0;
-  letter-spacing: 0.005em;
-}
+/* (今日のひと言は Today から Prep へ移動。Today はシンプルに保つ) */
 
-/* ---------- Prep sheet (心を整える: 書く前の頭をまとめる) ---------- */
+/* ---------- Prep sheet (整える: 紙に向かう前の準備一画面) ---------- */
 .prep {
   padding: var(--s-2) var(--s-4) var(--s-5);
   text-align: center;
@@ -501,6 +520,70 @@ a { color: var(--accent); text-decoration: none; }
   line-height: 1.85;
   margin: var(--s-2) 0 var(--s-4);
   padding: 0 var(--s-2);
+}
+.prep-section {
+  margin: 0 0 var(--s-5);
+  text-align: left;
+}
+.prep-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--s-2);
+}
+.prep-section-label {
+  font-size: var(--t-caption-2);
+  color: var(--label-tertiary);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.prep-section-label.center { display: block; text-align: center; margin-bottom: var(--s-3); }
+
+/* 今日のひと言: 引用+原文+著者 */
+.prep-hint .hint-text {
+  font-family: var(--font-serif);
+  font-size: var(--t-title-3);
+  line-height: 1.7;
+  color: var(--label);
+  margin: 0 0 var(--s-2);
+  letter-spacing: -0.003em;
+  font-style: normal;
+}
+.prep-hint .hint-original {
+  font-family: var(--font-serif);
+  font-size: var(--t-footnote);
+  line-height: 1.7;
+  color: var(--label-tertiary);
+  margin: 0 0 var(--s-2);
+  font-style: italic;
+  padding-left: var(--s-2);
+  border-left: 2px solid var(--accent-tint);
+}
+.prep-hint .hint-attr {
+  font-size: var(--t-footnote);
+  color: var(--label-secondary);
+  margin: 0;
+  text-align: right;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* 今日の問い: シンプルなブロッククォート */
+.prep-prompt .prompt-text {
+  font-family: var(--font-serif);
+  font-size: var(--t-title-3);
+  line-height: 1.7;
+  color: var(--label);
+  margin: 0;
+  letter-spacing: -0.003em;
+}
+
+/* prepタイトルラベル下のシャッフルボタン */
+.prep-section .quote-shuffle {
+  position: static;
+  width: 28px; height: 28px;
+  border-radius: 6px;
 }
 .breath-stage {
   display: flex; flex-direction: column;
